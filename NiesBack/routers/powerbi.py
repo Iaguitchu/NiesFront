@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Dict, Any
 import httpx # usada para fazer requisições HTTP assíncronas
 
-from models import Group
+from models import Group, Report
 from db import get_db
 from core.settings import settings, AUTH_URL
 
@@ -22,24 +22,53 @@ async def get_app_token() -> str:
             raise HTTPException(r.status_code, f"Auth error: {r.text}")
         return r.json()["access_token"]                                 #retorna access_token do JSON (string JWT de app).
 
+
 @router.get("/groups")
 def list_groups(db: Session = Depends(get_db)):
     rows = db.query(Group).filter(Group.is_active == True).all()
     for g in rows:
         return [{"id": g.id, "name": g.name}]
+    
 
-@router.get("/embed-info")
-async def embed_info(groupId: str = Query(..., alias="groupId"),
-                     db: Session = Depends(get_db)):
-    g: Group | None = db.query(Group).filter(Group.id == groupId, Group.is_active == True).first() #pega o grupo do banco ou None
-    if not g:
+@router.get("/reports")
+def list_reports(groupId: str = Query(...), db: Session = Depends(get_db)):
+    grp = db.query(Group).filter(Group.id == groupId, Group.is_active == True).first()
+    if not grp:
         raise HTTPException(404, "Group not found")
 
-    token = await get_app_token()
+    rows = (
+        db.query(Report)
+          .filter(Report.group_id == groupId, Report.is_active == True)
+          .order_by(Report.sort_order.nulls_last(), Report.name.asc())
+          .all()
+    )
+    return [
+        {
+            "id": r.id,
+            "name": r.name,
+            "group_id": r.group_id,
+        } for r in rows
+    ]
 
-    # 1) Buscar informações do report (embedUrl + datasetId)
-    report_url = f"{settings.PBI_API}/groups/{g.workspace_id}/reports/{g.report_id}"
-    headers = {"Authorization": f"Bearer {token}"}
+
+@router.get("/embed-info")
+async def embed_info(
+    reportId: str = Query(..., alias="reportId"),  # ex.: 'selvagens'
+    db: Session = Depends(get_db)
+):
+    rep = (
+        db.query(Report)
+          .filter(Report.id == reportId, Report.is_active == True)
+          .first()
+    )
+    if not rep:
+        raise HTTPException(404, "Report not found")
+
+    app_token = await get_app_token()
+    headers = {"Authorization": f"Bearer {app_token}"}
+
+    # 1) info do report
+    report_url = f"{settings.PBI_API}/groups/{rep.workspace_id}/reports/{rep.report_id}"
     async with httpx.AsyncClient(timeout=20) as client:
         r = await client.get(report_url, headers=headers)
         if r.status_code != 200:
@@ -48,18 +77,18 @@ async def embed_info(groupId: str = Query(..., alias="groupId"),
         embed_url = report["embedUrl"]
         dataset_id = report["datasetId"]
 
-        # 2) Gerar Embed Token (View)
-        gen_token_url = f"{settings.PBI_API}/groups/{g.workspace_id}/reports/{g.report_id}/GenerateToken"
-        body: Dict[str, Any] = {"accessLevel": "View"}
-        r2 = await client.post(gen_token_url, headers=headers, json=body)
+        # 2) embed token
+        gen_token_url = f"{settings.PBI_API}/groups/{rep.workspace_id}/reports/{rep.report_id}/GenerateToken"
+        r2 = await client.post(gen_token_url, headers=headers, json={"accessLevel": "View"})
         if r2.status_code != 200:
             raise HTTPException(r2.status_code, f"Generate token error: {r2.text}")
         embed_token = r2.json()["token"]
 
     return {
-        "groupId": g.workspace_id,
-        "reportId": g.report_id,
+        "groupId": rep.workspace_id,
+        "reportId": rep.report_id,
         "datasetId": dataset_id,
         "embedUrl": embed_url,
         "accessToken": embed_token,
     }
+

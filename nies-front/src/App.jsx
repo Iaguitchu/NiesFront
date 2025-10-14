@@ -1,7 +1,8 @@
-import { Routes, Route, Link, NavLink } from 'react-router-dom'
-import Home from './pages/Home'
-import Groups from './pages/Groups'
-import GrupoView from './pages/GrupoView'
+import { Routes, Route, NavLink } from "react-router-dom";
+import Home from "./pages/Home";
+import Groups from "./pages/Groups";
+import ReportsByGroup from "./pages/ReportsByGroup";
+import ReportView from "./pages/ReportView";
 
 export default function App() {
   return (
@@ -14,8 +15,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/grupos" element={<Groups />} />
-        <Route path="/grupos/:groupId" element={<GrupoView />} />
+        <Route path="/grupos/:groupId" element={<ReportsByGroup />} />
+        <Route path="/grupos/:groupId/relatorios/:reportId" element={<ReportView />} />
       </Routes>
     </div>
-  )
+  );
 }
