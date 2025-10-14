@@ -1,0 +1,5 @@
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; font-family: system-ui, Arial, sans-serif; background: #fff; color: #111; }
+a { color: #0d9488; text-decoration: none; }
+a.active { font-weight: 600; }

@@ -1,5 +1,5 @@
 {
-  "name": "front",
+  "name": "nies-front",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "axios": "^1.12.2",
+    "powerbi-client": "^2.23.1",
+    "powerbi-models": "^1.15.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"
