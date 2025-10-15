@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "@/services/api";
+import CategoryCard from "@/components/CategoryCard";
 
 export default function Groups() {
   const [groups, setGroups] = useState([]);
+  const [q, setQ] = useState("");
   const [erro, setErro] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let cancel = false;
-    (async () => {  
+    (async () => {
       try {
         const r = await api.get("/api/powerbi/groups");
         if (!cancel) setGroups(r.data);
@@ -22,20 +25,38 @@ export default function Groups() {
     return () => { cancel = true; };
   }, []);
 
-  if (erro) return <p style={{color:"crimson"}}>Erro: {String(erro)}</p>;
-  if (loading) return <p>Carregando grupos…</p>;
-  if (!groups.length) return <p>Nenhum grupo cadastrado.</p>;
+  const filtered = q.trim()
+    ? groups.filter(g => g.name.toLowerCase().includes(q.toLowerCase()))
+    : groups;
 
   return (
-    <div>
-      <h1>Grupos</h1>
-      <ul style={{ lineHeight: "2rem" }}>
-        {groups.map(g => (
-          <li key={g.id}>
-            <Link to={`/grupos/${g.id}`}>{g.name}</Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <main className="home">
+      <section className="hero">
+        <h1>O que você deseja saber sobre saúde?</h1>
+        <div className="search">
+          <input
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Busque por uma categoria…"
+          />
+        </div>
+      </section>
+
+      <section className="categories">
+        <h2>Categorias de produtos</h2>
+        {loading && <div className="state">Carregando…</div>}
+        {erro && <div className="state error">{String(erro)}</div>}
+
+        <div className="categories-row">
+          {filtered.map(g => (
+            <CategoryCard
+              key={g.id}
+              title={g.name}
+              onClick={() => navigate(`/${g.id}`)}
+            />
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }

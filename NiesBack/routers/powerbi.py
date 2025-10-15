@@ -26,8 +26,10 @@ async def get_app_token() -> str:
 @router.get("/groups")
 def list_groups(db: Session = Depends(get_db)):
     rows = db.query(Group).filter(Group.is_active == True).all()
+    lista = []
     for g in rows:
-        return [{"id": g.id, "name": g.name}]
+        lista.append({"id": g.id, "name": g.name})
+    return lista
     
 
 @router.get("/reports")
@@ -35,7 +37,6 @@ def list_reports(groupId: str = Query(...), db: Session = Depends(get_db)):
     grp = db.query(Group).filter(Group.id == groupId, Group.is_active == True).first()
     if not grp:
         raise HTTPException(404, "Group not found")
-
     rows = (
         db.query(Report)
           .filter(Report.group_id == groupId, Report.is_active == True)
