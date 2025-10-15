@@ -25,6 +25,7 @@ export default function Groups() {
     return () => { cancel = true; };
   }, []);
 
+  // filtro para busca se estiver vazio renderiza group
   const filtered = q.trim()
     ? groups.filter(g => g.name.toLowerCase().includes(q.toLowerCase()))
     : groups;
@@ -33,6 +34,8 @@ export default function Groups() {
     <main className="home">
       <section className="hero">
         <h1>O que você deseja saber sobre saúde?</h1>
+        
+        {/* aplicando filtro no serach */}
         <div className="search">
           <input
             value={q}
@@ -48,6 +51,7 @@ export default function Groups() {
         {erro && <div className="state error">{String(erro)}</div>}
 
         <div className="categories-row">
+
           {filtered.map(g => (
             <CategoryCard
               key={g.id}
