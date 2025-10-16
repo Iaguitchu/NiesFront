@@ -167,7 +167,8 @@
 
 .sidebar-item.active{
   border-color:#b3eee1;
-  background:#eafff9
+  background:#03966c;
+  color: white;
 }
 
 .solucoes-content {
