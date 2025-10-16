@@ -253,7 +253,6 @@
   color:#a32525
 }
 
-
 /* responsivo */
 @media (max-width: 980px){
   .solucoes{flex-direction:column}
@@ -261,4 +260,23 @@
     position:relative;
     top:auto;
     max-height:none}
+}
+
+/* Respeita acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* Animação “ampliando” + fade */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  animation: cardEnter 2500ms cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes cardEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

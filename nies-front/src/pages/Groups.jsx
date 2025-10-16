@@ -60,10 +60,11 @@ const filtered = qNorm
 
         <div className="categories-row">
 
-          {filtered.map(g => (
+          {filtered.map((g, idx) => (
             <CategoryCard
               key={g.id}
               title={g.name}
+              index={idx}
               onClick={() => navigate(`/${g.id}`)}
             />
           ))}

@@ -4,6 +4,7 @@ import { api } from "@/services/api";
 import Sidebar from "@/components/Sidebar";
 import DashboardCard from "@/components/DashboardCard";
 
+
 export default function ReportsByGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function ReportsByGroup() {
   );
 
 
-  
+
   return (
     <div className="solucoes">
       <Sidebar
@@ -78,11 +79,12 @@ export default function ReportsByGroup() {
         {!loading && !erro && !items.length && <div className="state">Nenhum relatório neste grupo.</div>}
 
         <div className="grid">
-          {items.map(item => (
+          {items.map((item, idx) => (
             <DashboardCard
               key={item.id}
               title={item.name}
               thumbnailUrl={item.thumbnail_url}
+              index={idx}
               onClick={() => navigate(`/${groupId}/relatorios/${item.id}`)}
             />
           ))}
