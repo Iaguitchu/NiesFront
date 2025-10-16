@@ -54,7 +54,7 @@ def list_reports(groupId: str = Query(...), db: Session = Depends(get_db)):
 
 @router.get("/embed-info")
 async def embed_info(
-    reportId: str = Query(..., alias="reportId"),  # ex.: 'selvagens'
+    reportId: str = Query(...),  # ex.: 'selvagens'
     db: Session = Depends(get_db)
 ):
     rep = (

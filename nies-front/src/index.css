@@ -1,5 +1,24 @@
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; }
-body { margin: 0; font-family: system-ui, Arial, sans-serif; background: #fff; color: #111; }
-a { color: white; text-decoration: none; font-weight: bold }
-a.active { font-weight: 600; }
+* { box-sizing: 
+    border-box; 
+}
+
+html, body, #root { 
+    height: 100%; 
+}
+
+body {
+     margin: 0; 
+     font-family: system-ui, Arial, sans-serif;
+     background: #fff; 
+     color: #111; 
+    }
+
+a { 
+    color: white; 
+    text-decoration: none; 
+    font-weight: bold 
+}
+
+a.active { 
+    font-weight: 600; 
+}

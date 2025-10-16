@@ -11,6 +11,7 @@ export default function Sidebar({ groups, activeId, onSelect }) {
               className={`sidebar-item ${active ? "active" : ""}`}
               onClick={() => onSelect(g.id)}
             >
+              {/* icones ficariam aqui */}
               <div className="bullet" />
               <span>{g.name}</span>
             </button>

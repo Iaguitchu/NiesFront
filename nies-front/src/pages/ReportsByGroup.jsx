@@ -21,13 +21,14 @@ export default function ReportsByGroup() {
         const r = await api.get("/api/powerbi/groups");
         if (!cancel) {
           setGroups(r.data);
-          if (!groupId && r.data.length) navigate(`/${r.data[0].id}`, { replace: true });
         }
       } catch { /* silencioso */ }
     })();
     return () => { cancel = true; };
   }, [groupId, navigate]);
 
+  
+  
   // carrega dashboards do grupo
   useEffect(() => {
     if (!groupId) return;
@@ -36,7 +37,8 @@ export default function ReportsByGroup() {
       try {
         setLoading(true);
         setErro(null);
-        // ajuste o nome do param conforme seu back (groupId vs group_id):
+        
+        //Passando parâmetro obrigatório na URL (useParams) para o back-end
         const r = await api.get("/api/powerbi/reports", { params: { groupId } });
         if (!cancel) setItems(r.data);
       } catch (e) {
@@ -48,11 +50,16 @@ export default function ReportsByGroup() {
     return () => { cancel = true; };
   }, [groupId]);
 
+ 
+ 
+  // Salvando na memoria se parametro for valido (renderiza página de Error ou Sucesso)
   const activeGroup = useMemo(
     () => groups.find(g => String(g.id) === String(groupId)),
     [groups, groupId]
   );
 
+
+  
   return (
     <div className="solucoes">
       <Sidebar
@@ -63,8 +70,7 @@ export default function ReportsByGroup() {
 
       <main className="solucoes-content">
         <header className="solucoes-head">
-          <h1>{activeGroup ? activeGroup.name : "Soluções"}</h1>
-          <p>Selecione um dashboard na lista abaixo.</p>
+          <h1>{activeGroup ? activeGroup.name : "Error URL Inválida"}</h1>
         </header>
 
         {loading && <div className="state">Carregando dashboards…</div>}

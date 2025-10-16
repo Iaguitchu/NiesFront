@@ -25,10 +25,18 @@ export default function Groups() {
     return () => { cancel = true; };
   }, []);
 
+  
+// Ignorar acentos
+  const norm = s => (s ?? "")
+  .normalize("NFD").replace(/\p{Diacritic}/gu, "")
+  .toLowerCase();
+
+
   // filtro para busca se estiver vazio renderiza group
-  const filtered = q.trim()
-    ? groups.filter(g => g.name.toLowerCase().includes(q.toLowerCase()))
-    : groups;
+const qNorm = norm(q.trim());
+const filtered = qNorm
+  ? groups.filter(g => norm(g.name).includes(qNorm))
+  : groups;
 
   return (
     <main className="home">
