@@ -1,12 +1,15 @@
 :root{
   --bg:#0d3d34;
-  --grad: linear-gradient(135deg,#0d3d34 0%, #158a73 100%);
+  --grad: linear-gradient(135deg,#0f0f0f 20% ,#c01b1b 80%);
   --fg:#eaf6f3;
   --ink:#1e2b27;
   --muted:#cfe7e1;
   --card:#0f4f44;
   --shadow: 0 10px 24px rgba(0,0,0,.15);
 }
+
+
+
 
 /* layout */
 .app .topbar{
@@ -17,7 +20,7 @@
   align-items:center;
   justify-content:space-between;
   padding:12px 20px;
-  background:#0f2e29;
+  background:#0f0f0f;
   color:var(--fg);
   box-shadow:var(--shadow);
   height: 100px;
@@ -75,7 +78,7 @@
 
 .categories h2{
   margin:0 0 16px 4px;
-  color:#24423b
+  color:#0f0f0f
 }
 
 .categories-row{
@@ -90,7 +93,7 @@
   display:flex;
   align-items:center;
   gap:12px;
-  background:linear-gradient(180deg,#147565,#0e4e43);
+  background:linear-gradient(180deg,#4169E1,#01050f);
   color:#fff;
   border:none;
   border-radius:16px;
@@ -99,7 +102,7 @@
   box-shadow:var(--shadow);
   cursor:pointer;
   transition:transform .08s ease, filter .15s ease;
-  width: 200px
+  width: 200px;
 }
 .category-card:hover{
   transform:translateY(-2px);
@@ -114,82 +117,30 @@
 }
 
 /* página soluções */
+
 .solucoes{
-  display:flex;
-  gap:20px;
-  padding:20px
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;  
 }
 
-
-.sidebar {
-    position: fixed;
-    top: 100px;
-    left: 0;
-    bottom: 0;
-    width: 280px;
-    background: #afc1bd;
-    color: #fff;
-    overflow-y: auto;
-    padding: 14px;
-}
-
-.sidebar-title{
-  font-weight:700;
-  margin:6px 8px 12px;
-  color:#24423b
-}
-.sidebar-list{
-  display:flex;
-  flex-direction:column;
-  gap:6px
-}
-.sidebar-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid transparent;
-  background:#fff;
-  cursor:pointer;
-  text-align:left;
-  transition:background .15s ease,border .15s ease;
-}
-.sidebar-item .bullet{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#b5d9cf
-}
-.sidebar-item:hover{
-  background:#f2fbf8
-}
-
-.sidebar-item.active{
-  border-color:#b3eee1;
-  background:#03966c;
-  color: white;
-}
-
-.solucoes-content {
-    flex: 1;
-    min-width: 0;
-    margin-left: 280px;
-}
-
-.solucoes-head h1{
-  margin:.2rem 0;
-  color:#24423b
-}
 .solucoes-head p{margin:0 0 16px;
   color:#4f6b63}
 
-.grid{
-  display:grid;
+  .solucoes-content{
+  min-height: 100%;
+  overflow: auto;  
+  padding: 16px 20px;
+}
+
+.cards{
+  display:flex;
   grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
   gap:16px;
-
 }
+
+
+
 .dashboard-card{
   display:flex;
   flex-direction:column;
@@ -197,6 +148,7 @@
   overflow:hidden;
   background:#fff;
   border:1px solid #e6f0ed;
+  width: 30vh;
 
   box-shadow:var(--shadow);
   cursor:pointer;
@@ -225,7 +177,7 @@
 .thumb-empty{
   width:100%;
   height:100%;
-  background: repeating-linear-gradient(45deg,#e5f3ef 0 10px,#f3fbf8 10px 20px)
+  background: repeating-linear-gradient(45deg,#090a0a 0 10px,#6d0808 10px 20px)
 }
 
 .dash-info{
@@ -234,7 +186,7 @@
 
 .dash-info h3{
   margin:.2rem 0;
-  color:#24423b;
+  color:#0f0f0f;
   font-size:16px
 }
 
@@ -253,14 +205,45 @@
   color:#a32525
 }
 
-/* responsivo */
-@media (max-width: 980px){
-  .solucoes{flex-direction:column}
-  .sidebar{width:auto;
-    position:relative;
-    top:auto;
-    max-height:none}
+
+
+.st-aside {
+  width: 280px;
+  border-right: 1px solid #eee;
+
+
+  /* Altura total com fallback */
+  height: 100dvh;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* o scroll fica na lista */
 }
+
+.st-title { 
+  flex: 0 0 auto; 
+  font-weight: 600; 
+  padding: 8px 12px; 
+  opacity: .7; 
+}
+
+
+.st-list {
+  flex: 1 1 auto;     /* ocupa o resto da altura */
+  overflow: auto;     /* scroll da árvore */
+  padding: 8px 0;
+}
+
+.st-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; cursor: pointer; border-radius: 8px; }
+.st-row:hover { background: #f5f7fa; }
+.st-active { background: #eaf2ff; }
+.st-chevron { border: 0; background: transparent; cursor: pointer; transition: transform .15s; font-size: 12px; line-height: 1; }
+.st-chevron.open { transform: rotate(90deg); }
+.st-bullet { width: 12px; display: inline-block; text-align: center; opacity: .5; }
+.st-children { margin-top: 2px; }
+
+
 
 /* Respeita acessibilidade */
 @media (prefers-reduced-motion: reduce) {
@@ -279,4 +262,10 @@
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* responsivo */
+@media (max-width: 980px){
+  .solucoes{flex-direction:column}
+
 }

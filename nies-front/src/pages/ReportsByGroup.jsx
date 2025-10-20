@@ -1,36 +1,33 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/services/api";
-import Sidebar from "@/components/Sidebar";
+import SidebarTree from "@/components/SidebarTree";
 import DashboardCard from "@/components/DashboardCard";
-
 
 export default function ReportsByGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
 
-  const [groups, setGroups] = useState([]);
+  const [tree, setTree] = useState([]);
   const [items, setItems] = useState([]);
   const [erro, setErro] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // carrega grupos para sidebar
+  // carrega ÁRVORE para a sidebar (1x)
   useEffect(() => {
     let cancel = false;
     (async () => {
       try {
-        const r = await api.get("/api/powerbi/groups");
-        if (!cancel) {
-          setGroups(r.data);
-        }
-      } catch { /* silencioso */ }
+        const { data } = await api.get("/api/powerbi/groups", { params: { tree: true } });
+        if (!cancel) setTree(data || []);
+      } catch (e) {
+        if (!cancel) console.error(e);
+      }
     })();
     return () => { cancel = true; };
-  }, [groupId, navigate]);
+  }, []);
 
-  
-  
-  // carrega dashboards do grupo
+  // carrega relatórios do grupo (o seu back já traz descendentes ao passar o groupId do pai)
   useEffect(() => {
     if (!groupId) return;
     let cancel = false;
@@ -38,10 +35,8 @@ export default function ReportsByGroup() {
       try {
         setLoading(true);
         setErro(null);
-        
-        //Passando parâmetro obrigatório na URL (useParams) para o back-end
-        const r = await api.get("/api/powerbi/reports", { params: { groupId } });
-        if (!cancel) setItems(r.data);
+        const { data } = await api.get("/api/powerbi/reports", { params: { groupId } });
+        if (!cancel) setItems(data || []);
       } catch (e) {
         if (!cancel) setErro(e?.response?.data || e.message);
       } finally {
@@ -51,34 +46,24 @@ export default function ReportsByGroup() {
     return () => { cancel = true; };
   }, [groupId]);
 
- 
- 
-  // Salvando na memoria se parametro for valido (renderiza página de Error ou Sucesso)
-  const activeGroup = useMemo(
-    () => groups.find(g => String(g.id) === String(groupId)),
-    [groups, groupId]
-  );
-
-
-
   return (
     <div className="solucoes">
-      <Sidebar
-        groups={groups}
+      <SidebarTree
+        tree={tree}
         activeId={groupId ? String(groupId) : null}
-        onSelect={id => navigate(`/${id}`)}
+        onSelect={(id) => navigate(`/${id}`)} // clicar no rótulo navega
       />
 
       <main className="solucoes-content">
         <header className="solucoes-head">
-          <h1>{activeGroup ? activeGroup.name : "Error URL Inválida"}</h1>
+          <h1 className="title-reports">Relatórios</h1>
         </header>
 
         {loading && <div className="state">Carregando dashboards…</div>}
         {erro && <div className="state error">{String(erro)}</div>}
         {!loading && !erro && !items.length && <div className="state">Nenhum relatório neste grupo.</div>}
 
-        <div className="grid">
+        <div className="cards">
           {items.map((item, idx) => (
             <DashboardCard
               key={item.id}

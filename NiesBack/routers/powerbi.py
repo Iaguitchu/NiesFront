@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from typing import Dict, Any, List
 import httpx # usada para fazer requisições HTTP assíncronas
 
 from models import Group, Report
 from db import get_db
 from core.settings import settings, AUTH_URL
+from schemas import GroupOut, GroupTreeOut, ReportOut
 
 router = APIRouter(prefix="/api/powerbi", tags=["powerbi"])
 
@@ -22,35 +23,73 @@ async def get_app_token() -> str:
             raise HTTPException(r.status_code, f"Auth error: {r.text}")
         return r.json()["access_token"]                                 #retorna access_token do JSON (string JWT de app).
 
+def _build_tree(groups: List[Group]) -> List[Group]:
+    by_parent: dict[str | None, list[Group]] = {}       #Cria o dicionário vazio “pai → filhos”, chave é str ou None e o valor é uma lista de Group
+    for g in groups:
+        by_parent.setdefault(g.parent_id, []).append(g) #Adiciona no dicionario id com parent id e value uma lista de Group exemplo: { None: [Group("animais")], "animais": [Group("domesticos"), Group("selvagens")] }
+    def attach(node: Group):
+        node.children = by_parent.get(node.id, [])
+        for c in node.children:
+            attach(c)                                   #chama a função de novo para cada filho, para também preencher os netos, bisnetos, etc.
+    roots = by_parent.get(None, [])                     
+    for r in roots:
+        attach(r)                                       
+    return roots
 
-@router.get("/groups")
-def list_groups(db: Session = Depends(get_db)):
+def _descendants_ids(db: Session, root_id: str) -> set[str]:
+    # busca tudo e faz DFS em memória
+    groups = db.query(Group).filter(Group.is_active == True).all()
+    children_by_parent = {}
+    for g in groups:
+        children_by_parent.setdefault(g.parent_id, []).append(g.id) #Adiciona no dicionario id com parent id e value uma lista de Group exemplo: { None: [Group("animais")], "animais": [Group("domesticos"), Group("selvagens")] }
+    result = set([root_id])
+    stack = [root_id]
+    while stack:
+        cur = stack.pop()
+        for child_id in children_by_parent.get(cur, []):
+            if child_id not in result:
+                result.add(child_id)
+                stack.append(child_id)
+    return result
+
+@router.get("/groups", response_model=list[GroupOut] | list[GroupTreeOut])
+def list_groups(
+    tree: bool = Query(False, description="Se true, retorna a árvore de grupos"),
+    db: Session = Depends(get_db),
+):
     rows = db.query(Group).filter(Group.is_active == True).all()
-    lista = []
-    for g in rows:
-        lista.append({"id": g.id, "name": g.name})
-    return lista
+    if not tree:
+        tops = []
+        for g in rows:
+            if g.parent_id is None:
+                tops.append(g)
+        return tops
+    #árvore completa
+    return _build_tree(rows)
+
+@router.get("/groups/{group_id}/children", response_model=list[GroupOut])
+def list_children(group_id: str, db: Session = Depends(get_db)):
+    rows = db.query(Group).filter(
+        Group.is_active == True,
+        Group.parent_id == group_id
+    ).all()
+    return rows
+
+@router.get("/reports", response_model=list[ReportOut])
+def reports_by_group(
+    groupId: str = Query(..., alias="groupId"),
+    db: Session = Depends(get_db),
+):
     
+    ids = _descendants_ids(db, groupId)
+    q = db.query(Report).filter(Report.is_active == True, Report.group_id.in_(ids))
+    rows = q.order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc()).all()
 
-@router.get("/reports")
-def list_reports(groupId: str = Query(...), db: Session = Depends(get_db)):
-    grp = db.query(Group).filter(Group.id == groupId, Group.is_active == True).first()
-    if not grp:
-        raise HTTPException(404, "Group not found")
-    rows = (
-        db.query(Report)
-          .filter(Report.group_id == groupId, Report.is_active == True)
-          .order_by(Report.sort_order.nulls_last(), Report.name.asc())
-          .all()
-    )
-    return [
-        {
-            "id": r.id,
-            "name": r.name,
-            "group_id": r.group_id,
-        } for r in rows
-    ]
-
+    # (Opcional) se você tiver thumbs salvas em algum lugar, popular 'thumbnail_url' aqui.
+    out = []
+    for r in rows:
+        out.append(ReportOut(id=r.id, name=r.name, thumbnail_url=None))
+    return out
 
 @router.get("/embed-info")
 async def embed_info(

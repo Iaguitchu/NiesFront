@@ -41,7 +41,7 @@ const filtered = qNorm
   return (
     <main className="home">
       <section className="hero">
-        <h1>O que você deseja saber sobre saúde?</h1>
+        <h1>Núcleo de Informações Estratégicas em Saúde - NIES</h1>
         
         {/* aplicando filtro no serach */}
         <div className="search">
@@ -54,7 +54,7 @@ const filtered = qNorm
       </section>
 
       <section className="categories">
-        <h2>Categorias de produtos</h2>
+        <h2>Categorias de DashBoards</h2>
         {loading && <div className="state">Carregando…</div>}
         {erro && <div className="state error">{String(erro)}</div>}
 
