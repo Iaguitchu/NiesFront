@@ -29,5 +29,9 @@ class Report(Base):
     report_id: Mapped[str] = mapped_column(String(64), nullable=False)
     sort_order: Mapped[int | None] = mapped_column(Integer, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    title_description: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    description: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    thumbnail_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     group: Mapped[Group] = relationship(back_populates="reports")

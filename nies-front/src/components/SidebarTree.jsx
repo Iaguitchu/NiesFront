@@ -28,25 +28,19 @@ function Node({ node, level = 0, activeId, onSelect }) {
         tabIndex={0}
         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect(node.id)}
       >
+        {/* se tem filho mostra a seta */}
         {hasChildren ? (
-          <button
-            className={`st-chevron ${open ? "open" : ""}`}
-            title={open ? "Recolher" : "Expandir"}
-            onClick={(e) => {
-              e.stopPropagation(); // não navegar; só abrir/fechar
-              setOpen((v) => !v);
-            }}
-            aria-label={open ? "Recolher" : "Expandir"}
-          >
-            ▸
-          </button>
+          <button className={`st-chevron ${open ? "open" : ""}`}
+          aria-expanded={open}  
+           onClick={(e) => { e.stopPropagation(); setOpen(v => !v);}}> ▶ </button>
+          
         ) : (
-          <span className="st-bullet">•</span>
-        )}
+          <span className="st-bullet">•</span>)}
 
         <span className="st-label">{node.name}</span>
       </div>
 
+      
       {hasChildren && open && (
         <div className="st-children">
           {node.children.map((child) => (

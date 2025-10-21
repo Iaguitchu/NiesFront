@@ -19,6 +19,7 @@ export default function ReportsByGroup() {
     (async () => {
       try {
         const { data } = await api.get("/api/powerbi/groups", { params: { tree: true } });
+        // se o efeito não foi cancelado, atualiza o estado. Usa data ou array vazio
         if (!cancel) setTree(data || []);
       } catch (e) {
         if (!cancel) console.error(e);
@@ -26,8 +27,9 @@ export default function ReportsByGroup() {
     })();
     return () => { cancel = true; };
   }, []);
+  
 
-  // carrega relatórios do grupo (o seu back já traz descendentes ao passar o groupId do pai)
+  // carrega relatórios do grupo (back já traz descendentes ao passar o groupId do pai)
   useEffect(() => {
     if (!groupId) return;
     let cancel = false;
@@ -66,12 +68,15 @@ export default function ReportsByGroup() {
         <div className="cards">
           {items.map((item, idx) => (
             <DashboardCard
-              key={item.id}
-              title={item.name}
-              thumbnailUrl={item.thumbnail_url}
-              index={idx}
-              onClick={() => navigate(`/${groupId}/relatorios/${item.id}`)}
-            />
+  key={item.id}
+  title={item.name}
+  titleDescription={item.title_description ?? ""}
+  description={item.description ?? "(sem descrição)"}
+  imageUrl={item.image_url}          // ou item.img64
+  thumbnailUrl={item.thumbnail_url}  // fallback se não tiver imageUrl
+  index={idx}
+  onClick={() => navigate(`/${groupId}/relatorios/${item.id}`)}
+/>
           ))}
         </div>
       </main>

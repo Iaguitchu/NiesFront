@@ -7,8 +7,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <div className="brand"><span className="logo-dot" /> <NavLink to="/" end>Logo</NavLink>
-    </div>
+        <div className="brand"><span className="logo-dot" /> <NavLink to="/" end>Logo</NavLink></div>
         <nav className="menu">
           <NavLink to="/" end>Home</NavLink>
         </nav>

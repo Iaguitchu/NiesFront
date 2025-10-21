@@ -85,10 +85,17 @@ def reports_by_group(
     q = db.query(Report).filter(Report.is_active == True, Report.group_id.in_(ids))
     rows = q.order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc()).all()
 
-    # (Opcional) se você tiver thumbs salvas em algum lugar, popular 'thumbnail_url' aqui.
+
     out = []
     for r in rows:
-        out.append(ReportOut(id=r.id, name=r.name, thumbnail_url=None))
+        out.append(ReportOut(
+        id=r.id,
+        name=r.name,
+        thumbnail_url=r.thumbnail_url,
+        title_description=r.title_description,
+        description=r.description,
+        image_url=r.image_url,
+    ))
     return out
 
 @router.get("/embed-info")
