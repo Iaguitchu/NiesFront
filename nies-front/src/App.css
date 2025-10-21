@@ -252,7 +252,15 @@
   min-height: 220px;
   display: flex;
   width: 300px;
+  
+  
+  /* animacao */
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  animation: cardEnter 2500ms cubic-bezier(.2,.8,.2,1) forwards;
 }
+
+
 
 .dc-bg{
   position: absolute; inset: 0;
