@@ -1,12 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from typing import Dict, Any, List
 import httpx # usada para fazer requisições HTTP assíncronas
 
-from models import Group, Report
+from models.models_rbac import User 
+from typing import Optional
+from models.models import Group, Report
 from db import get_db
 from core.settings import settings, AUTH_URL
-from schemas import GroupOut, GroupTreeOut, ReportOut
+from schemas.schemas import GroupOut, GroupTreeOut, ReportOut
+
+from models.models_rbac import UserGroupMember, GroupReportPermission
+from services.security import get_current_user_optional
 
 router = APIRouter(prefix="/api/powerbi", tags=["powerbi"])
 
@@ -76,26 +82,57 @@ def list_children(group_id: str, db: Session = Depends(get_db)):
     return rows
 
 @router.get("/reports", response_model=list[ReportOut])
-def reports_by_group(
-    groupId: str = Query(..., alias="groupId"),
+def list_reports_by_group(
+    groupId: str = Query(..., description="slug (ou name) do grupo raiz"),
     db: Session = Depends(get_db),
+    current: Optional[User] = Depends(get_current_user_optional),
 ):
-    
-    ids = _descendants_ids(db, groupId)
-    q = db.query(Report).filter(Report.is_active == True, Report.group_id.in_(ids))
-    rows = q.order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc()).all()
+    # 1) Resolva o grupo raiz 
+    g = db.query(Group).filter(Group.is_active == True, Group.name == groupId).first()
+    if not g:
+        return []
 
+    # 2) Todos os descendentes + o próprio
+    group_ids = _descendants_ids(db, g.id)
 
+    # 3) Base query: relatórios ativos dos grupos (raiz + filhos)
+    q = db.query(Report).filter(
+        Report.is_active == True,
+        Report.group_id.in_(group_ids),
+    )
+
+    # 4) Permissões
+    if current and getattr(current, "is_admin", False):
+        rows = q.order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc()).all()
+    elif current:
+        allowed_subq = (
+            db.query(GroupReportPermission.report_id)
+              .join(UserGroupMember, UserGroupMember.group_id == GroupReportPermission.group_id)
+              .filter(UserGroupMember.user_id == current.id)
+        )
+        rows = (
+            q.filter(or_(Report.is_public == True, Report.id.in_(allowed_subq)))
+             .order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc())
+             .all()
+        )
+    else:
+        rows = (
+            q.filter(Report.is_public == True)
+             .order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc())
+             .all()
+        )
+
+    # 5) Monta a saída no formato que seu front espera
     out = []
     for r in rows:
         out.append(ReportOut(
-        id=r.id,
-        name=r.name,
-        thumbnail_url=r.thumbnail_url,
-        title_description=r.title_description,
-        description=r.description,
-        image_url=r.image_url,
-    ))
+            id=r.id,
+            name=r.name,
+            thumbnail_url=r.thumbnail_url,
+            title_description=r.title_description,
+            description=r.description,
+            image_url=r.image_url,
+        ))
     return out
 
 @router.get("/embed-info")

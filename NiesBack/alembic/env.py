@@ -2,8 +2,15 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
+import sys, pathlib, os
+
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+
 from core.settings import settings          # lê .env (DB_URL, etc.)
-from models import Base                     # seu DeclarativeBase
+from models.models import Base                     # seu DeclarativeBase
+from models.models_rbac import *
+
+
 
 # Config do Alembic
 config = context.config

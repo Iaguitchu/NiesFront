@@ -252,6 +252,7 @@
   min-height: 220px;
   display: flex;
   width: 300px;
+  height: 250px;
   
   
   /* animacao */
@@ -273,12 +274,13 @@
 .dc-card:hover .dc-bg{
   transform: scale(2.03);
   filter: brightness(2.8);
+  
 }
 
 .dc-overlay{
   position: relative;
   z-index: 1;
-  margin-top: auto;             /* gruda embaixo */
+  margin-top: 30%;      /*gruda embaixo */ 
   width: 100%;
   padding: 16px;
   color: #fff;
@@ -290,8 +292,11 @@
 }
 
 .dc-card:hover .dc-overlay{
-  transform: translateY(0);     /* sobe o overlay no hover */
+  transform: translateY(0%);     /* sobe o overlay no hover */
+  background-color: #6d0808;margin-top: 0;
 }
+
+
 
 .dc-title{
   /* margin: 0 0 6px 0; */
@@ -303,7 +308,7 @@
   margin: 0;
   opacity: .9;
   line-height: 1.4;
-  max-height: 4.5em;            /* 3 linhas aprox. */
+  max-height: 10em;            /* 3 linhas aprox. */
   overflow: hidden;
   text-overflow: ellipsis;
 }
