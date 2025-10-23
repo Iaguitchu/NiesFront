@@ -1,12 +1,13 @@
 # routers/auth.py
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from sqlalchemy.orm import Session
 from db import get_db
 from models.models_rbac import User, UserStatus
 from schemas.schemas_rbac import UserCreate, LoginIn, TokenOut, UserOut, RefreshIn
 from services.security import *
 from datetime import timedelta
-
+from fastapi.responses import HTMLResponse
+from core.templates import templates
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 ACCESS_EXPIRES = timedelta(minutes=15)
@@ -38,6 +39,11 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(u)
     return u
+
+@router.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
 
 @router.post("/login", response_model=TokenOut)
 def login(data: LoginIn, db: Session = Depends(get_db)):

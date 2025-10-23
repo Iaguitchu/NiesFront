@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container" style="max-width:420px;">
+  <h1 class="mb-3">Login</h1>
+  <form id="loginForm">
+    <div class="mb-3">
+      <label class="form-label">E-mail</label>
+      <input name="email" type="email" class="form-control" required />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Senha</label>
+      <input name="password" type="password" class="form-control" required />
+    </div>
+    <button class="btn btn-primary w-100">Entrar</button>
+  </form>
+</div>
+
+<script>
+const API = "http://localhost:8000"; // sua API
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const resp = await fetch(API + "/auth/login", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ email: f.get("email"), password: f.get("password") })
+  });
+  if (!resp.ok) return alert("Credenciais inválidas");
+  const data = await resp.json();
+  // guarde tokens (exemplo simples)
+  localStorage.setItem("access_token", data.access_token);
+  localStorage.setItem("refresh_token", data.refresh_token);
+  location.href = "/";
+});
+</script>
+{% endblock %}
