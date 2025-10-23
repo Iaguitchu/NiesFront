@@ -29,7 +29,12 @@ class LoginIn(BaseModel):
 
 class TokenOut(BaseModel):
     access_token: str
-    token_type: Literal["bearer"] = "bearer"
+    token_type: str = "Bearer"
+    refresh_token: str
+
+class RefreshIn(BaseModel):
+    refresh_token: str
+    
 
 class GroupCreate(BaseModel):
     name: str

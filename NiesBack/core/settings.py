@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     DB_URL: str
 
     SECRET_KEY: str
+
+    AZURE_REDIRECT_URI: str
+
     
 
 settings = Settings()

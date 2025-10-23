@@ -137,8 +137,10 @@ def list_reports_by_group(
 
 @router.get("/embed-info")
 async def embed_info(
-    reportId: str = Query(...),  # ex.: 'selvagens'
-    db: Session = Depends(get_db)
+    reportId: str = Query(...),
+    username: Optional[str] = Query(None, description="Usuário final para aplicar RLS"),
+    roles: Optional[str] = Query(None, description="Roles separadas por vírgula"),
+    db: Session = Depends(get_db),
 ):
     rep = (
         db.query(Report)
@@ -161,9 +163,22 @@ async def embed_info(
         embed_url = report["embedUrl"]
         dataset_id = report["datasetId"]
 
-        # 2) embed token
+        # 2) corpo do GenerateToken
+        body = {"accessLevel": "View"}
+        if username:
+            roles_list = []
+            for r in (roles or "").split(","): #separa por virgula
+                if r.strip(): #tira espaços em branco
+                    roles_list.append(r.strip())
+            body["identities"] = [{
+                "username": username,
+                "roles": roles_list,
+                "datasets": [dataset_id]
+            }]
+
+        # 3) embed token
         gen_token_url = f"{settings.PBI_API}/groups/{rep.workspace_id}/reports/{rep.report_id}/GenerateToken"
-        r2 = await client.post(gen_token_url, headers=headers, json={"accessLevel": "View"})
+        r2 = await client.post(gen_token_url, headers=headers, json=body)
         if r2.status_code != 200:
             raise HTTPException(r2.status_code, f"Generate token error: {r2.text}")
         embed_token = r2.json()["token"]
