@@ -1,13 +1,16 @@
-# routers/auth.py
-from fastapi import APIRouter, Depends, HTTPException, Response, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from db import get_db
 from models.models_rbac import User, UserStatus
+from models.password_reset import PasswordReset
 from schemas.schemas_rbac import UserCreate, LoginIn, TokenOut, UserOut, RefreshIn
 from services.security import *
-from datetime import timedelta
+from datetime import timedelta, datetime
 from fastapi.responses import HTMLResponse
 from core.templates import templates
+from schemas.auth_reset import ResetPasswordIn
+from services.reset_password import send_reset_code
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 ACCESS_EXPIRES = timedelta(minutes=15)
@@ -15,6 +18,10 @@ REFRESH_EXPIRES = timedelta(days=7)
 
 def _normalize_email(email: str) -> str:
     return (email or "").strip().lower()
+
+@router.get("/register", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse("cadastro.html", {"request": request})
 
 @router.post("/register", response_model=UserOut)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
@@ -108,3 +115,10 @@ def logout(payload: RefreshIn):
     if claims and claims.get("jti"):
         revoke_refresh_jti(claims["jti"])
     return {"ok": True}
+
+
+@router.post("reset-password/")
+def reset_password(data: ResetPasswordIn, db: Session = Depends(get_db)):
+   return send_reset_code(_normalize_email(data.email), db)
+
+    

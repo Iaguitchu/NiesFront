@@ -1,4 +1,3 @@
-# models_rbac.py
 from datetime import datetime, date
 from sqlalchemy import (
     String, Boolean, Integer, Date, DateTime, Enum, ForeignKey, UniqueConstraint
