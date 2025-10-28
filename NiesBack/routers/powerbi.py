@@ -1,11 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from sqlalchemy import or_
+from typing import Dict, Any, List
 import httpx # usada para fazer requisições HTTP assíncronas
 
-from models import Group, Report
+from models.models_rbac import User 
+from typing import Optional
+from models.models import Group, Report
 from db import get_db
 from core.settings import settings, AUTH_URL
+from schemas.schemas import GroupOut, GroupTreeOut, ReportOut
+
+from models.models_rbac import UserGroupMember, GroupReportPermission
+from services.security import get_current_user_optional
 
 router = APIRouter(prefix="/api/powerbi", tags=["powerbi"])
 
@@ -22,40 +29,118 @@ async def get_app_token() -> str:
             raise HTTPException(r.status_code, f"Auth error: {r.text}")
         return r.json()["access_token"]                                 #retorna access_token do JSON (string JWT de app).
 
+def _build_tree(groups: List[Group]) -> List[Group]:
+    by_parent: dict[str | None, list[Group]] = {}       #Cria o dicionário vazio “pai → filhos”, chave é str ou None e o valor é uma lista de Group
+    for g in groups:
+        by_parent.setdefault(g.parent_id, []).append(g) #Adiciona no dicionario id com parent id e value uma lista de Group exemplo: { None: [Group("animais")], "animais": [Group("domesticos"), Group("selvagens")] }
+    def attach(node: Group):
+        node.children = by_parent.get(node.id, [])
+        for c in node.children:
+            attach(c)                                   #chama a função de novo para cada filho, para também preencher os netos, bisnetos, etc.
+    roots = by_parent.get(None, [])                     
+    for r in roots:
+        attach(r)                                       
+    return roots
 
-@router.get("/groups")
-def list_groups(db: Session = Depends(get_db)):
+def _descendants_ids(db: Session, root_id: str) -> set[str]:
+    # busca tudo e faz DFS em memória
+    groups = db.query(Group).filter(Group.is_active == True).all()
+    children_by_parent = {}
+    for g in groups:
+        children_by_parent.setdefault(g.parent_id, []).append(g.id) #Adiciona no dicionario id com parent id e value uma lista de Group exemplo: { None: [Group("animais")], "animais": [Group("domesticos"), Group("selvagens")] }
+    result = set([root_id])
+    stack = [root_id]
+    while stack:
+        cur = stack.pop()
+        for child_id in children_by_parent.get(cur, []):
+            if child_id not in result:
+                result.add(child_id)
+                stack.append(child_id)
+    return result
+
+@router.get("/groups", response_model=list[GroupOut] | list[GroupTreeOut])
+def list_groups(
+    tree: bool = Query(False, description="Se true, retorna a árvore de grupos"),
+    db: Session = Depends(get_db),
+):
     rows = db.query(Group).filter(Group.is_active == True).all()
-    lista = []
-    for g in rows:
-        lista.append({"id": g.id, "name": g.name})
-    return lista
-    
+    if not tree:
+        tops = []
+        for g in rows:
+            if g.parent_id is None:
+                tops.append(g)
+        return tops
+    #árvore completa
+    return _build_tree(rows)
 
-@router.get("/reports")
-def list_reports(groupId: str = Query(...), db: Session = Depends(get_db)):
-    grp = db.query(Group).filter(Group.id == groupId, Group.is_active == True).first()
-    if not grp:
-        raise HTTPException(404, "Group not found")
-    rows = (
-        db.query(Report)
-          .filter(Report.group_id == groupId, Report.is_active == True)
-          .order_by(Report.sort_order.nulls_last(), Report.name.asc())
-          .all()
+@router.get("/groups/{group_id}/children", response_model=list[GroupOut])
+def list_children(group_id: str, db: Session = Depends(get_db)):
+    rows = db.query(Group).filter(
+        Group.is_active == True,
+        Group.parent_id == group_id
+    ).all()
+    return rows
+
+@router.get("/reports", response_model=list[ReportOut])
+def list_reports_by_group(
+    groupId: str = Query(..., description="slug (ou name) do grupo raiz"),
+    db: Session = Depends(get_db),
+    current: Optional[User] = Depends(get_current_user_optional),
+):
+    # 1) Resolva o grupo raiz 
+    g = db.query(Group).filter(Group.is_active == True, Group.name == groupId).first()
+    if not g:
+        return []
+
+    # 2) Todos os descendentes + o próprio
+    group_ids = _descendants_ids(db, g.id)
+
+    # 3) Base query: relatórios ativos dos grupos (raiz + filhos)
+    q = db.query(Report).filter(
+        Report.is_active == True,
+        Report.group_id.in_(group_ids),
     )
-    return [
-        {
-            "id": r.id,
-            "name": r.name,
-            "group_id": r.group_id,
-        } for r in rows
-    ]
 
+    # 4) Permissões
+    if current and getattr(current, "is_admin", False):
+        rows = q.order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc()).all()
+    elif current:
+        allowed_subq = (
+            db.query(GroupReportPermission.report_id)
+              .join(UserGroupMember, UserGroupMember.group_id == GroupReportPermission.group_id)
+              .filter(UserGroupMember.user_id == current.id)
+        )
+        rows = (
+            q.filter(or_(Report.is_public == True, Report.id.in_(allowed_subq)))
+             .order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc())
+             .all()
+        )
+    else:
+        rows = (
+            q.filter(Report.is_public == True)
+             .order_by(Report.sort_order.is_(None), Report.sort_order.asc(), Report.name.asc())
+             .all()
+        )
+
+    # 5) Monta a saída no formato que seu front espera
+    out = []
+    for r in rows:
+        out.append(ReportOut(
+            id=r.id,
+            name=r.name,
+            thumbnail_url=r.thumbnail_url,
+            title_description=r.title_description,
+            description=r.description,
+            image_url=r.image_url,
+        ))
+    return out
 
 @router.get("/embed-info")
 async def embed_info(
-    reportId: str = Query(...),  # ex.: 'selvagens'
-    db: Session = Depends(get_db)
+    reportId: str = Query(...),
+    username: Optional[str] = Query(None, description="Usuário final para aplicar RLS"),
+    roles: Optional[str] = Query(None, description="Roles separadas por vírgula"),
+    db: Session = Depends(get_db),
 ):
     rep = (
         db.query(Report)
@@ -78,9 +163,22 @@ async def embed_info(
         embed_url = report["embedUrl"]
         dataset_id = report["datasetId"]
 
-        # 2) embed token
+        # 2) corpo do GenerateToken
+        body = {"accessLevel": "View"}
+        if username:
+            roles_list = []
+            for r in (roles or "").split(","): #separa por virgula
+                if r.strip(): #tira espaços em branco
+                    roles_list.append(r.strip())
+            body["identities"] = [{
+                "username": username,
+                "roles": roles_list,
+                "datasets": [dataset_id]
+            }]
+
+        # 3) embed token
         gen_token_url = f"{settings.PBI_API}/groups/{rep.workspace_id}/reports/{rep.report_id}/GenerateToken"
-        r2 = await client.post(gen_token_url, headers=headers, json={"accessLevel": "View"})
+        r2 = await client.post(gen_token_url, headers=headers, json=body)
         if r2.status_code != 200:
             raise HTTPException(r2.status_code, f"Generate token error: {r2.text}")
         embed_token = r2.json()["token"]

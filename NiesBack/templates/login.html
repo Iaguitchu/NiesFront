@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Faça Login - NIES - SES/SP</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+...
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{{ url_for('static', path='assets/images/favicon.png') }} " />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="row w-100 m-0">
+          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+            <div class="card col-lg-4 mx-auto">
+              <div class="card-body px-5 py-5">
+                <h3 class="card-title text-left mb-3">Entrar</h3>
+                <form id="loginForm" method="GET">
+                  <div class="form-group">
+                    <label>Seu E-mail *</label>
+                    <input type="email" name="email" class="form-control p_input" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Senha *</label>
+                    <input type="password" name="password" class="form-control p_input" required>
+                  </div>
+                  <div class="form-group d-flex align-items-center justify-content-between">
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input"> Mantenha-me Conectado </label>
+                    </div>
+                    <a href="#" class="forgot-pass">Lembrar Senha</a>
+                  </div>
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-block enter-btn">Entrar</button>
+                  </div>
+                  <p id="loginError" class="text-danger mt-2" style="display:none;">Credenciais inválidas</p>
+                  <!-- <div class="d-flex">
+                    <button class="btn btn-facebook mr-2 col">
+                      <i class="mdi mdi-microsoft"></i> Microsoft </button>
+                    <button class="btn btn-google col">
+                      <i class="mdi mdi-google"></i> Google </button>
+                  </div> -->
+                  <p class="sign-up">Não tem cadastro?<a href="cadastro.html"> Cadastre-se</a></p>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+        </div>
+        <!-- row ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+<!-- Script de login com mensagens específicas -->
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const errEl = document.getElementById("loginError");
+
+  // esconde a msg de erro antes de tentar
+  errEl.style.display = "none";
+  errEl.textContent = "";
+
+  try {
+    const resp = await fetch("/auth/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      credentials: "same-origin",
+      body: JSON.stringify({
+        email: f.get("email"),
+        password: f.get("password")
+      })
+    });
+
+    if (!resp.ok) {
+      // tenta extrair uma mensagem do backend
+      let serverDetail = "";
+      try {
+        const data = await resp.json();
+        serverDetail = typeof data?.detail === "string" ? data.detail
+                      : (data?.detail?.message || data?.message || "");
+      } catch (_) {}
+
+      if (resp.status === 403 || (serverDetail && /not approved/i.test(serverDetail))) {
+        errEl.textContent = "Sua conta foi criada, mas ainda não foi aprovada. Aguarde a autorização de um administrador.";
+      } else if (resp.status === 401) {
+        errEl.textContent = "E-mail ou senha inválidos.";
+      } else {
+        errEl.textContent = serverDetail || "Não foi possível realizar o login no momento.";
+      }
+      errEl.style.display = "block";
+      return;
+    }
+
+    const data = await resp.json();
+    localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+
+    // redireciona para a home 
+    window.location.href = "/";
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = "Erro de rede. Tente novamente.";
+    errEl.style.display = "block";
+  }
+});
+</script>
+
+
+    <!-- endinject -->
+  </body>
+</html>

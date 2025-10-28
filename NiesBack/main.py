@@ -1,8 +1,25 @@
 from fastapi import FastAPI
 from routers.powerbi import router as powerbi_router
+from routers.admin import router as admin
+from routers.auth import router as auth
+from routers.index import router as index
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+# static em /static
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# templates Jinja (como no Flask)
+templates = Jinja2Templates(directory="templates")
+
+
+
 app.include_router(powerbi_router)
+app.include_router(admin )
+app.include_router(auth)
+app.include_router(index)
 
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Cadastre-se - NIES - SES/SP</title>
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    x
+  </head>
+  <body>
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="row w-100 m-0">
+          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+            <div class="card col-lg-4 mx-auto">
+              <div class="card-body px-5 py-5">
+                <h3 class="card-title text-left mb-3">Cadastre-se</h3>
+
+                <!-- Removi action/method p/ controlar via JS -->
+                <form id="registerForm" novalidate>
+                  <div class="form-group">
+                    <label>Seu Nome*</label>
+                    <input type="text" name="full_name" class="form-control p_input" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Usuário*</label>
+                    <input type="text" name="username" class="form-control p_input" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>E-mail*</label>
+                    <input type="email" name="email" class="form-control p_input" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>CPF*</label>
+                    <input type="text" name="cpf" class="form-control p_input" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Telefone / WhatsApp</label>
+                    <input type="text" name="phone" class="form-control p_input">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Senha*</label>
+                    <input type="password" name="password" class="form-control p_input" required minlength="6">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Confirmar senha*</label>
+                    <input type="password" name="password_confirm" class="form-control p_input" required minlength="6">
+                  </div>
+
+                  <div class="text-center">
+                    <button id="btnSubmit" type="submit" class="btn btn-primary btn-block enter-btn">Cadastrar</button>
+                  </div>
+
+                  <div id="formMsg" class="mt-2 text-center" style="display:none;"></div>
+
+                  <div class="d-flex mt-3">
+                    <button type="button" class="btn btn-facebook col mr-2">
+                      <i class="mdi mdi-microsoft"></i> Microsoft
+                    </button>
+                    <button type="button" class="btn btn-google col">
+                      <i class="mdi mdi-google"></i> Google
+                    </button>
+                  </div>
+
+                  <p class="sign-up text-center mt-3">Já tem cadastro?
+                    <a href="{{ url_for('auth_login_page') if false else 'login.html' }}"> Entrar</a>
+                  </p>
+                  <p class="terms">Ao criar sua conta, você aceita nossos termos</p>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+        </div>
+        <!-- row ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+
+    <!-- plugins:js -->
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <!-- inject:js -->
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script">
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+
+    <!-- Script de cadastro -->
+    <script>
+    const $ = (sel) => document.querySelector(sel);
+    const msg = (text, ok=false) => {
+    const el = $("#formMsg");
+    el.style.display = "block";
+    el.className = "mt-2 text-center " + (ok ? "text-success" : "text-danger");
+    el.textContent = text;
+  };
+
+    $("#registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg(""); $("#formMsg").style.display = "none";
+
+      const f = new FormData(e.target);
+      const pwd = f.get("password");
+      const pwd2 = f.get("password_confirm");
+
+      if (!pwd || pwd !== pwd2) {
+        msg("As senhas não coincidem.", false);
+        return;
+      }
+
+      const payload = {
+        name: (f.get("full_name") || "").trim(),
+        username: (f.get("username") || "").trim(),
+        email: (f.get("email") || "").trim(),
+        cpf: (f.get("cpf") || "").trim(),
+        phone: (f.get("phone") || "").trim() || null,
+        password: pwd
+      };
+
+      const btn = $("#btnSubmit");
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch("/auth/register", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+
+        if (!resp.ok) {
+          // tenta ler detalhe do backend
+          let detail = "";
+          try {
+            const data = await resp.json();
+            detail = typeof data?.detail === "string" ? data.detail : (data?.detail?.message || "");
+          } catch(_) {}
+
+          if (resp.status === 400) {
+            if (/email.*registered/i.test(detail)) {
+              msg("Este e-mail já está cadastrado.", false);
+            } else if (/cpf.*registered/i.test(detail)) {
+              msg("Este CPF já está cadastrado.", false);
+            } else {
+              msg(detail || "Não foi possível concluir o cadastro.", false);
+            }
+          } else {
+            msg(detail || "Não foi possível concluir o cadastro.", false);
+          }
+
+          btn.disabled = false;
+          return;
+        }
+
+        msg("Cadastro realizado com sucesso! Sua conta aguarda aprovação do administrador. Redirecionando para o login...", true);
+        setTimeout(() => { window.location.href = "/auth/login"; }, 1500);
+
+      } catch (err) {
+        console.error(err);
+        msg("Erro de rede. Tente novamente.", false);
+        btn.disabled = false;
+      }
+    });
+</script>
+
+  </body>
+</html>
+</div>
+<button type="submit" class="btn btn-primary btn-block enter-btn">Entrar</button>
