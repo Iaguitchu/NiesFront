@@ -46,5 +46,5 @@ def home(
                   .all())
 
     ctx = {"request": request, "user": user, "reports": rows}
-    tpl = "index_logada.html" if user else "index.html"
+    tpl = "index.html"
     return templates.TemplateResponse(tpl, ctx)

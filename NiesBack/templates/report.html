@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ report.name }} - NIES</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- seu CSS base do tema -->
+  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+  
+
+ <!-- head -->
+<style>
+  html, body { height: 100%; margin:0; }
+  #reportContainer { width:100%; height: calc(100vh - 24px); }
+</style>
+
+</head>
+<body>
+  <div class="container-scroller">
+    <div class="content-wrapper">
+      <h3 class="mb-3">{{ report.name }}</h3>
+      <div id="reportContainer"></div>
+    </div>
+  </div>
+
+  <!-- Power BI client -->
+<!-- antes do seu script -->
+<script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"></script>
+
+
+ <script>
+(async function () {
+  const reportId = "{{ report.id }}";
+
+  // 1) Busca embed-info
+  let info;
+  try {
+    const r = await fetch(`/api/powerbi/embed-info?reportId=${encodeURIComponent(reportId)}`);
+    if (!r.ok) {
+      const txt = await r.text();
+      console.error("embed-info HTTP error:", r.status, txt);
+      alert(`Falha ao obter embed-info: ${r.status}`);
+      return;
+    }
+    info = await r.json();
+    console.log("embed-info:", info);
+  } catch (e) {
+    console.error("embed-info fetch failed:", e);
+    alert("Erro de rede ao obter embed-info");
+    return;
+  }
+
+  // 2) Monta config do embed
+  const models = window['powerbi-client'].models;
+  const config = {
+    type: "report",
+    id: info.reportId,          // GUID do report no Power BI
+    embedUrl: info.embedUrl,    // URL de embed retornada pela API
+    accessToken: info.accessToken, // Embed token
+    tokenType: models.TokenType.Embed,
+    settings: {
+      panes: { filters: { visible: false }, pageNavigation: { visible: true } },
+      background: models.BackgroundType.Transparent
+    }
+  };
+
+  // 3) Embeda e registra listeners de erro
+  const container = document.getElementById("reportContainer");
+  const report = powerbi.embed(container, config);
+
+  report.on("loaded", () => console.log("Report loaded"));
+  report.on("rendered", () => console.log("Report rendered"));
+  report.on("error", (e) => {
+    console.error("PowerBI embed error:", e && e.detail);
+    alert("Falha ao renderizar o relatório (veja o console).");
+  });
+})();
+</script>
+
+</body>
+</html>

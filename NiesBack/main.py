@@ -3,6 +3,7 @@ from routers.powerbi import router as powerbi_router
 from routers.admin import router as admin
 from routers.auth import router as auth
 from routers.index import router as index
+from routers.reports import router as reports
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -20,6 +21,7 @@ app.include_router(powerbi_router)
 app.include_router(admin )
 app.include_router(auth)
 app.include_router(index)
+app.include_router(reports)
 
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(

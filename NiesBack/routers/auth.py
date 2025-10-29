@@ -135,7 +135,7 @@ def refresh_token(
 
     # 5) (Opcional, recomendado) Rotacionar o refresh
 
-    new_refresh, new_jti = create_refresh_token(
+    new_refresh, = create_refresh_token(
         sub=str(u.id),
         expires_delta=REFRESH_EXPIRES,
     )

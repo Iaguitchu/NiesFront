@@ -3,6 +3,7 @@ from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from datetime import timedelta
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent  # raiz do projeto (NiesBack/)
 
 class Settings(BaseSettings):
@@ -13,9 +14,9 @@ class Settings(BaseSettings):
 
     #Email
     MAIL_FROM_NAME: str = "NIES"
-    MAIL_FROM: str
-    MAIL_HOST: str
-    MAIL_PORT: int 
+    MAIL_FROM: str | None = None
+    MAIL_HOST: str | None = None
+    MAIL_PORT: int | None = None
     MAIL_USERNAME: str | None = None
     MAIL_PASSWORD: str | None = None
     MAIL_USE_TLS: bool = True

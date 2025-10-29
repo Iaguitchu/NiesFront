@@ -58,6 +58,7 @@ class UserGroup(Base):
     report_permissions: Mapped[list["GroupReportPermission"]] = relationship(back_populates="group", cascade="all, delete-orphan")
 
 class UserGroupMember(Base):
+    # vínculo usuário ↔ grupo de usuários.
     __tablename__ = "user_group_members"
     __table_args__ = (UniqueConstraint("user_id", "group_id", name="uq_user_group_member"),)
 
@@ -73,6 +74,7 @@ class UserGroupMember(Base):
 # Atenção: reports.id é String(64) no modelo atual -> manter compatível!
 # -----------------------------------------
 class GroupReportPermission(Base):
+    # vínculo grupo de usuários ↔ relatório
     __tablename__ = "group_report_permissions"
     __table_args__ = (UniqueConstraint("group_id", "report_id", name="uq_group_report"),)
 

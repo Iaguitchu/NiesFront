@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block content %}
+
+Cadastro de Painéis, grupos e subgrupos de painéis
+
+<!--Styles Necessários-->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', path='assets/images/favicon.png') }}" />
+
+
+
+<!--Scripts necessários:-->
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/select2/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/typeahead.js/typeahead.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/chart.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/file-upload.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
+
+
+
+<!--INICIO DO MAIN - CADASTRO DE PAINEIS (GRUPOS, SUBGRUPOS E PAINEIS)-->
+<div class="row">
+  <div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Grupo de Painéis</h4>
+        <p class="card-description"> Cadastre um Grupo de Painéis </p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputUsername1">Nome do Grupo</label>
+            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Nome do Grupo">
+          </div>
+          <div class="form-group">
+            <label>Acesso</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Público">Público</option>
+            <option value="Privado">Privado</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleTextarea1">Descrição do Grupo</label>
+            <textarea class="form-control" id="exampleTextarea1" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Ícone</label>
+            <input type="file" name="img[]" class="file-upload-default">
+            <div class="input-group col-xs-12">
+              <input type="text" class="form-control file-upload-info" disabled placeholder="Escolha uma Imagem">
+              <span class="input-group-append">
+                <button class="file-upload-browse btn btn-primary" type="button">Procurar Imagem</button>
+              </span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Cadastrar Grupo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Subgrupo de Painéis</h4>
+        <p class="card-description"> Cadastre um Subgrupo de Painéis </p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputUsername1">Nome do Subgrupo</label>
+            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Nome do Grupo">
+          </div>
+          <div class="form-group">
+            <label>Grupo Pai</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Administrativo">Administrativo</option>
+            <option value="Atenção Primária">Atenção Primária</option>
+            <option value="Gestão">Gestão</option>
+            <option value="Indicadores de Saúde">Indicadores de Saúde</option>
+            <option value="Atenção Especializada">Atenção Especializada</option>
+            <option value="Vigilância em Saúde">Vigilância em Saúde</option>
+            <option value="Saude Digital">Saude Digital</option>
+            <option value="Indicadores de T.I">Indicadores de T.I</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label>Acesso</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Público">Público</option>
+            <option value="Privado">Privado</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleTextarea1">Descrição do Subgrupo</label>
+            <textarea class="form-control" id="exampleTextarea1" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Ícone</label>
+            <input type="file" name="img[]" class="file-upload-default">
+            <div class="input-group col-xs-12">
+              <input type="text" class="form-control file-upload-info" disabled placeholder="Escolha uma Imagem">
+              <span class="input-group-append">
+                <button class="file-upload-browse btn btn-primary" type="button">Procurar Imagem</button>
+              </span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Cadastrar Subgrupo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Painéis (Relatórios)</h4>
+        <p class="card-description"> Cadastre os Painéis que exibirão os relatórios </p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputName1">Nome do Painel</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="Nome do Painel">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName1">Workspace ID - Power BI</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="Informe o Workspace ID do Power BI">
+          </div>
+            <div class="form-group">
+            <label for="exampleInputName1">Report ID - Power BI</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="Informe o Report ID do Power BI">
+          </div>
+          <div class="form-group">
+            <label>Grupo Pai</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Administrativo">Administrativo</option>
+            <option value="Atenção Primária">Atenção Primária</option>
+            <option value="Gestão">Gestão</option>
+            <option value="Indicadores de Saúde">Indicadores de Saúde</option>
+            <option value="Atenção Especializada">Atenção Especializada</option>
+            <option value="Vigilância em Saúde">Vigilância em Saúde</option>
+            <option value="Saude Digital">Saude Digital</option>
+            <option value="Indicadores de T.I">Indicadores de T.I</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label>Subgrupo</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Vigilância Sanitária - CVS">Vigilância Sanitária - CVS</option>
+            <option value="Vigilância Sanitária - CVS">Vigilância Epidemiológica - CVE</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label>Acesso</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Público">Público</option>
+            <option value="Privado">Privado</option>
+          </select>
+          </div>
+          <div class="form-group">
+            <label>Imagem do Painel</label>
+            <input type="file" name="img[]" class="file-upload-default">
+            <div class="input-group col-xs-12">
+              <input type="text" class="form-control file-upload-info" disabled placeholder="Selecione uma Imagem">
+              <span class="input-group-append">
+                <button class="file-upload-browse btn btn-primary" type="button">Procurar</button>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleTextarea1">Descrição do Painel</label>
+            <textarea class="form-control" id="exampleTextarea1" rows="2"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary mr-2">Cadastrar Painel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+<!--FIM DO MAIN-->
