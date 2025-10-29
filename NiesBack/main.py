@@ -4,6 +4,7 @@ from routers.admin import router as admin
 from routers.auth import router as auth
 from routers.index import router as index
 from routers.reports import router as reports
+from routers.userRegistrationGroup import router as userRegistration
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -22,6 +23,7 @@ app.include_router(admin )
 app.include_router(auth)
 app.include_router(index)
 app.include_router(reports)
+app.include_router(userRegistration)
 
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(

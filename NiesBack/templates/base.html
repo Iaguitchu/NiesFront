@@ -139,7 +139,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-laptop"></i>
               </span>
-              <span class="menu-title">Saúde Digitalllll</span>
+              <span class="menu-title">Saúde Digital</span>
             </a>
           </li>
           <li class="nav-item menu-items">
@@ -173,84 +173,102 @@
             <ul class="navbar-nav navbar-nav-right">
               {%if user %}
               <li class="nav-item dropdown d-none d-lg-block">
-                <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#">+ Novo</a>
+                <a class="nav-link btn btn-success create-new-button" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#">+ Cadastrar</a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
-                  <h6 class="p-3 mb-0">+ Adicionar</h6>
+                  <h6 class="p-3 mb-0">Cadastro de:</h6>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="/user-registration-group">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-file-outline text-primary"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject ellipsis mb-1">Painel</p>
+                      <p class="preview-subject ellipsis mb-1">Painéis</p>
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
-                    <div class="preview-thumbnail">
-                      <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-web text-info"></i>
-                      </div>
-                    </div>
-                    <div class="preview-item-content">
-                      <p class="preview-subject ellipsis mb-1">Grupo de Paineis</p>
-                    </div>
-                  </a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="/cadastro-usuarios.html">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-layers text-danger"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject ellipsis mb-1">Subgrupo de Paineis</p>
+                      <p class="preview-subject ellipsis mb-1">Usuários</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+              </li>
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Novidades</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-calendar text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Novo Painel</p>
+                      <p class="text-muted ellipsis mb-0"> Acompanhe os dados sobre febre maculosa no novo painel interativo</p>
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item preview-item">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-layers text-danger"></i>
+                        <i class="mdi mdi-settings text-danger"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject ellipsis mb-1">Usuário</p>
+                      <p class="preview-subject mb-1">Saúde em Foco</p>
+                      <p class="text-muted ellipsis mb-0"> Governo consegue investimento de 20 bi </p>
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item preview-item">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
-                        <i class="mdi mdi-layers text-danger"></i>
+                        <i class="mdi mdi-link-variant text-warning"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject ellipsis mb-1">Grupo de Usuários</p>
+                      <p class="preview-subject mb-1">Novos Leitos</p>
+                      <p class="text-muted ellipsis mb-0"> O estado conta com 32 novos leitos de UTI </p>
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <p class="p-3 mb-0 text-center">Escolha o que Deseja</p>
+                  <p class="p-3 mb-0 text-center">Ver todas as notificações</p>
                 </div>
               </li>
-        
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">
-                      {% if user %}
-                        {{ user.name or user.email }}
-                      {% endif %}</p>
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">{{user.name}}</p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
                   <h6 class="p-3 mb-0">Meu Perfil</h6>
                   <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-settings text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Configurações</p>
+                    </div>
+                  </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" data-action="logout" href="#">
+                  <a class="dropdown-item preview-item" data-action="logout">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -264,6 +282,8 @@
                   <p class="p-3 mb-0 text-center">Opções Avançadas</p>
                 </div>
               </li>
+
+
               {%else%}
                 <ul class="navbar-nav navbar-nav-right">
                   <li class="nav-item dropdown d-none d-lg-block">
