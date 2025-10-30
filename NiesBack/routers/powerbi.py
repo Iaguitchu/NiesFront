@@ -10,6 +10,7 @@ from models.models import Group, Report
 from db import get_db
 from core.settings import settings, AUTH_URL
 from schemas.schemas import GroupOut, GroupTreeOut, ReportOut
+from services.security import require_admin
 
 from models.models_rbac import UserGroupMember, GroupReportPermission
 from services.security import get_current_user_optional

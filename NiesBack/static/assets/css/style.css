@@ -7912,7 +7912,23 @@ pre {
   display: flex;
   flex-wrap: wrap;
   margin-right: -0.75rem;
-  margin-left: -0.75rem; }
+  margin-left: -0.75rem; 
+}
+
+.row.space-between { justify-content: space-between; }
+
+scroll-area {
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: .5rem;
+    min-height: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.margin-cadastro{
+  margin-top: 20px;
+}
 
 .no-gutters {
   margin-right: 0;
@@ -9009,7 +9025,10 @@ textarea.tt-hint {
 .form-check {
   position: relative;
   display: block;
-  padding-left: 1.25rem; }
+  padding-left: 1.25rem; 
+  width: 200px;}
+
+
 
 .form-check-input {
   position: absolute;

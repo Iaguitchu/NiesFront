@@ -87,10 +87,7 @@ def login(data: LoginIn, response: Response, db: Session = Depends(get_db)):
     )
     return TokenOut(access_token=access, refresh_token=refresh)
 
-# routers/auth.py
-from typing import Annotated, Optional
-from fastapi import APIRouter, Request, Response, HTTPException, Depends
-from sqlalchemy.orm import Session
+
 
 # ... imports dos seus helpers e settings ...
 

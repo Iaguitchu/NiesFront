@@ -40,195 +40,70 @@
 
 
 <!--INICIO DO MAIN - CADASTRO DE PAINEIS (GRUPOS, SUBGRUPOS E PAINEIS)-->
-<div class="row">
-  <div class="col-md-6 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Grupo de Usuário</h4>
-        <p class="card-description"> Cadastre os grupos de Usuário </p>
-        <form class="forms-sample">
-          <div class="form-group">
-            <label for="exampleInputUsername1">Nome do Grupo</label>
-            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Nome do Grupo">
-          </div>
-          <div class="form-group">
-            <label for="exampleTextarea1">Descrição do Grupo</label>
-            <textarea class="form-control" id="exampleTextarea1" rows="4"></textarea>
-          </div>
-          <div class="form-group">
-            <p class="card-description">Grupos de Paineis Permitidos</p>
+<div class="row margin-cadastro">
+  <div class="row">
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Grupo de Usuário</h4>
+          <p class="card-description"> Cadastre os grupos de Usuário </p>
+          <form class="forms-sample">
+            <div class="form-group">
+              <label for="exampleInputUsername1">Nome do Grupo</label>
+              <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Nome do Grupo">
+            </div>
+            <div class="form-group">
+              <label for="exampleTextarea1">Descrição do Grupo</label>
+              <textarea class="form-control" id="exampleTextarea1" rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <p class="card-description">Grupos de Paineis Permitidos</p>
+            <form>
+              <div class="row justify-content-between">
+                {%for g in groups %}
+                    <div class="form-check">
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" > {{g.name}} </label>
+                    </div>
+                {% endfor %}
+                  {% if groups|length == 0 %}
+                    <div class="text-muted">Nenhum grupo cadastrado.</div>
+                  {% endif %}                            
+              </div>
+        <button type="submit" class="btn btn-primary mr-2">Cadastrar Usuário</button>
+            </form>
+            </div>
+            </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Paineis Permitidos (Nível de Acesso)</h4>
+          <p class="card-description"> Selecione os Paineis Permitidos </p>
           <form>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" disabled checked> Publicos </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Administrativo </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Atenção Primária </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Gestão </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Indicadores de Saúde </label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Atenção Especializada </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Vigilância em Saúde </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Saúde Digital </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Indicadores de T.I </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-          </div>
-          </form>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-6 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Paineis Permitidos (Nível de Acesso)</h4>
-        <p class="card-description"> Selecione os Paineis Permitidos </p>
-        <form>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <p class="card-description"> Painéis Publicos </p>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" disabled checked> Painéis Publicos </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 1 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 2 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 3 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 4 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 5 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 6 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 7 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 8 </label>
-                  </div>
+            <p class="card-description"> Painéis Privados </p>
+              <div class="row">
+                  {%for r in reports_private %}
                     <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 9 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 10 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 11 </label>
-                  </div>
-                </div>
+                      <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input"> {{r.name}} </label>
+                    </div>
+                  {% endfor %}
+                  {% if reports_private|length == 0 %}
+                    <div class="text-muted">Nenhum relatório cadastrado.</div>
+                  {% endif %}     
               </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <p class="card-description"> Painéis Privados </p>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 12</label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 13 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 14 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 15 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 16 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" checked> Painel Privado 17 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 18 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 19 </label>
-                  </div>
-                    <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 20 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 21 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 22 </label>
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input"> Painel Privado 23 </label>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
+
+          </form>
           
-          <button type="submit" class="btn btn-primary mr-2">Cadastrar Grupo</button>
-        </form>
+        </div>
       </div>
     </div>
+    
   </div>
   <div class="col-12 grid-margin stretch-card">
     <div class="card">
@@ -291,7 +166,7 @@
                 </div>
               </div>
             </div>
-          <button type="submit" class="btn btn-primary mr-2">Cadastrar Usuário</button>
+          
         </form>
       </div>
     </div>

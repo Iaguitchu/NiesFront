@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, Annotated
 from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
+from starlette import status
 
 ACCESS_EXPIRES = timedelta(minutes=1)
 REFRESH_EXPIRES = timedelta(days=7)
@@ -56,6 +57,8 @@ def decode_token_safely(token: str, verify_type: Optional[str] = None) -> Option
         return claims
     except JWTError:
         return None
+    
+    
     
 def get_current_user_optional(
     request: Request,
@@ -183,6 +186,20 @@ def get_current_user_optional(
             max_age=int(ACCESS_EXPIRES.total_seconds()),
         )
         return user
+    
+def require_admin(user: User | None = Depends(get_current_user_optional)) -> User:
+    if not user:
+        # 303 + Location faz o redirect
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            headers={"Location": "/auth/login"},
+        )
+    if not getattr(user, "is_admin", False):
+        raise HTTPException(
+            status_code=status.HTTP_303_SEE_OTHER,
+            headers={"Location": "/"},
+        )
+    return user
 
 
 def get_current_user(
