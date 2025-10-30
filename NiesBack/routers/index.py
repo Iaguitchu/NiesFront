@@ -1,5 +1,5 @@
 
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
@@ -21,12 +21,17 @@ def home(
 ):
     # base: só ativos
     q = db.query(Report).filter(Report.is_active == True)
+    pending_count = 0
 
     # permissões:
     if user and getattr(user, "is_admin", False):
         rows = q.order_by(Report.sort_order.is_(None),
                           Report.sort_order.asc(),
                           Report.name.asc()).all()
+        pending_count = db.query(func.count(User.id))\
+                          .filter(User.status == "pending")\
+                          .scalar()
+                          
     elif user:
         allowed_subq = (
             db.query(GroupReportPermission.report_id)
@@ -45,6 +50,6 @@ def home(
                             Report.name.asc())
                   .all())
 
-    ctx = {"request": request, "user": user, "reports": rows}
+    ctx = {"request": request, "user": user, "reports": rows, "pending_users_count": pending_count}
     tpl = "index.html"
     return templates.TemplateResponse(tpl, ctx)

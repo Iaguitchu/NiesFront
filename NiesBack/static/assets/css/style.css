@@ -15173,6 +15173,8 @@ a.text-secondary:hover, .list-wrapper a.remove:hover, a.text-secondary:focus, .l
 .text-success {
   color: #00d25b !important; }
 
+
+
 a.text-success:hover, a.text-success:focus {
   color: #00863a !important; }
 
@@ -17856,7 +17858,7 @@ div.tagsinput {
 .icon {
   display: flex;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;}
   .icon.icon-box-light {
     width: 40px;
     height: 37px;
@@ -17878,6 +17880,8 @@ div.tagsinput {
     color: #0d0d0d; }
   .icon .icon-item {
     font-size: 20px; }
+
+
 
 /* Tables */
 .table, .jsgrid .jsgrid-table {

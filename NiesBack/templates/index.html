@@ -25,27 +25,33 @@
                 </div>
               </div>
             </div>
+            {%if user and user.is_admin %}
             <div class="row">
+              {%if pending_users_count %}
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
+                    
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">35</h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+5%</p>
+                          <h3 class="mb-0">Pendentes: </h3>
+                          <p class="text-warning ml-2 mb-0 font-weight-medium" style="font-size:2rem;line-height:1;">
+                            {{ pending_users_count }} </p>
                         </div>
                       </div>
                       <div class="col-3">
-                        <div class="icon icon-box-success ">
+                        <div class="icon icon-box-success" style="cursor: pointer;">
                           <span class="mdi mdi-arrow-top-right icon-item"></span>
                         </div>
                       </div>
                     </div>
                     <h6 class="text-muted font-weight-normal">Painéis Publicos</h6>
+                     
                   </div>
                 </div>
               </div>
+              {%endif%}
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
@@ -107,6 +113,7 @@
                 </div>
               </div>
             </div>
+            {%endif%}
             <div class="row">
               {% if reports and reports|length %}
                 {% for r in reports %}
@@ -141,7 +148,7 @@
               {% endif %}
           <!--- FIM DO BLOCO DO PAINEL --->
 
-              
+              {% if user %}
             <!---INICIO DO BLOCO DA IA-->
             <div class="col-12 grid-margin stretch-card" id="genie">
                 <div class="card">
@@ -158,7 +165,7 @@
                 </div>
               </div>
               <!---FIM DO BLOCO DA IA--->
-            
+                {%endif%}
           </div>
           <!-- Extremidades do Conteúdo -->
           <!-- Parcial do rodapé -->
