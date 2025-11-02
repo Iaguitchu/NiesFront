@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!--Styles Necessários-->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', path='assets/images/favicon.png') }}" />
+
+
+
+<!--Scripts necessários:-->
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/select2/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/typeahead.js/typeahead.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/chart.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/file-upload.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
+
+
+
+<!--INICIO DO MAIN - CADASTRO DE PAINEIS (GRUPOS, SUBGRUPOS E PAINEIS)-->
+<div class="row">
+  <div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Grupo de Usuário</h4>
+        <p class="card-description"> Cadastre os grupos de Usuário </p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputUsername1">Nome do Grupo</label>
+            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Nome do Grupo">
+          </div>
+          <div class="form-group">
+            <label for="exampleTextarea1">Descrição do Grupo</label>
+            <textarea class="form-control" id="exampleTextarea1" rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <p class="card-description">Grupos de Paineis Permitidos</p>
+          <form>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Atenção Especializada </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Vigilância em Saúde </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Saúde Digital </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Indicadores de T.I </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          </div>
+          </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Paineis Permitidos (Nível de Acesso)</h4>
+        <p class="card-description"> Selecione os Paineis Permitidos </p>
+        <form>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <p class="card-description"> Painéis Publicos </p>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" disabled checked> Painéis Publicos </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 1 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 2 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 3 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 4 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 5 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 6 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 7 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 8 </label>
+                  </div>
+                    <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 9 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 10 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 11 </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <p class="card-description"> Painéis Privados </p>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 12</label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 13 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 14 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 15 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 16 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" checked> Painel Privado 17 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 18 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 19 </label>
+                  </div>
+                    <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 20 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 21 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 22 </label>
+                  </div>
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input"> Painel Privado 23 </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+          <button type="submit" class="btn btn-primary mr-2">Cadastrar Grupo</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Cadastro de Usuário</h4>
+        <p class="card-description"> Cadastre o Usuário para acessar os Paineis </p>
+        <form class="forms-sample">
+          <div class="form-group">
+            <label for="exampleInputName1">Nome do Usuário</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="Nome do Usuáro">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName1">CPF</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="CPF">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName1">E-mail</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="E-mail">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName1">Telefone</label>
+            <input type="text" class="form-control" id="exampleInputName1" placeholder="Telefone">
+          </div>
+          <div class="form-group">
+            <label>Grupo de Usuario (Nível de Acesso)</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="master">Master</option>
+            <option value="Gestão">Gestão</option>
+            <option value="Estratégico">Estratégico</option>
+            <option value="Operacional">Operacional</option>
+          </select>
+          </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label">Status do Usuário</label>
+              <div class="col-sm-2">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="membershipRadios" id="membershipRadios1" value="Ativo" checked> Ativo </label>
+                </div>
+              </div>
+              <div class="col-sm-2">
+                <div class="form-check">
+                  <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="membershipRadios" id="membershipRadios2" value="Inativo"> Inativo </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label">Período de Vigência</label>
+              <div class="col-sm-2">
+                <div class="form-check">
+                  <p class="card-description"> Data Inicial </p>
+                  <input class="typeahead" type="text" placeholder="dd/mm/yyyy">
+                </div>
+              </div>
+              <div class="col-sm-2">
+                <div class="form-check">
+                  <p class="card-description"> Data Inicial </p>
+                  <input class="typeahead" type="text" placeholder="dd/mm/yyyy">
+                </div>
+              </div>
+            </div>
+          <button type="submit" class="btn btn-primary mr-2">Cadastrar Usuário</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+<!--FIM DO MAIN-->

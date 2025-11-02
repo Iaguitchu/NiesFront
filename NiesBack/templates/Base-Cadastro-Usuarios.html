@@ -40,7 +40,7 @@
 
 
 <!--INICIO DO MAIN - CADASTRO DE PAINEIS (GRUPOS, SUBGRUPOS E PAINEIS)-->
-<div class="row margin-cadastro">
+<div class="row">
   <div class="row">
     <div class="col-md-6 grid-margin stretch-card">
       <div class="card">
@@ -85,11 +85,11 @@
           <p class="card-description"> Selecione os Paineis Permitidos </p>
           <form>
             <p class="card-description"> Painéis Privados </p>
-              <div class="row">
+              <div id="reportsContainer" class="row">
                   {%for r in reports_private %}
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input"> {{r.name}} </label>
+                        <input type="checkbox" class="form-check-input" name="report" value="{{ r.id }}" > {{r.name}} </label>
                     </div>
                   {% endfor %}
                   {% if reports_private|length == 0 %}
@@ -102,75 +102,111 @@
           
         </div>
       </div>
-    </div>
-    
+    </div>    
   </div>
-  <div class="col-12 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Cadastro de Usuário</h4>
-        <p class="card-description"> Cadastre o Usuário para acessar os Paineis </p>
-        <form class="forms-sample">
-          <div class="form-group">
-            <label for="exampleInputName1">Nome do Usuário</label>
-            <input type="text" class="form-control" id="exampleInputName1" placeholder="Nome do Usuáro">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputName1">CPF</label>
-            <input type="text" class="form-control" id="exampleInputName1" placeholder="CPF">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputName1">E-mail</label>
-            <input type="text" class="form-control" id="exampleInputName1" placeholder="E-mail">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputName1">Telefone</label>
-            <input type="text" class="form-control" id="exampleInputName1" placeholder="Telefone">
-          </div>
-          <div class="form-group">
-            <label>Grupo de Usuario (Nível de Acesso)</label>
-          <select class="js-example-basic-single" style="width:100%">
-            <option value="master">Master</option>
-            <option value="Gestão">Gestão</option>
-            <option value="Estratégico">Estratégico</option>
-            <option value="Operacional">Operacional</option>
-          </select>
-          </div>
-            <div class="form-group row">
-              <label class="col-sm-2 col-form-label">Status do Usuário</label>
-              <div class="col-sm-2">
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input type="radio" class="form-check-input" name="membershipRadios" id="membershipRadios1" value="Ativo" checked> Ativo </label>
-                </div>
-              </div>
-              <div class="col-sm-2">
-                <div class="form-check">
-                  <label class="form-check-label">
-                    <input type="radio" class="form-check-input" name="membershipRadios" id="membershipRadios2" value="Inativo"> Inativo </label>
-                </div>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="col-sm-2 col-form-label">Período de Vigência</label>
-              <div class="col-sm-2">
-                <div class="form-check">
-                  <p class="card-description"> Data Inicial </p>
-                  <input class="typeahead" type="text" placeholder="dd/mm/yyyy">
-                </div>
-              </div>
-              <div class="col-sm-2">
-                <div class="form-check">
-                  <p class="card-description"> Data Inicial </p>
-                  <input class="typeahead" type="text" placeholder="dd/mm/yyyy">
-                </div>
-              </div>
-            </div>
-          
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+
+  <script>
+  const API_BASE =
+    ("{{ request.url_for('static', path='') }}".replace(/\/static\/?$/, "/")) ||
+    "http://127.0.0.1:8000/";
+
+    console.log("API_BASE =", API_BASE);
+
+  function getCheckedReportIds() {
+    return Array.from(document.querySelectorAll('input[name="report"]:checked')).map(i => i.value);
+  }
+
+  function setCheckedReportIds(ids) {
+    const set = new Set(ids);
+    document.querySelectorAll('input[name="report"]').forEach(i => {
+      i.checked = set.has(i.value);
+    });
+  }
+
+  async function loadExistingUserGroups() {
+    try {
+      const resp = await fetch(`${API_BASE}api/admin/user-groups`, { credentials: "include" });
+      if (!resp.ok) throw new Error("Falha ao listar grupos de usuário.");
+      const groups = await resp.json(); // [{id, name, description}]
+      const wrap = document.getElementById("existingUserGroups");
+      wrap.innerHTML = "";
+      groups.forEach(g => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn btn-outline-primary btn-sm";
+        btn.textContent = g.name;
+        btn.dataset.groupId = g.id;
+        btn.addEventListener("click", () => onClickUserGroup(g.id));
+        wrap.appendChild(btn);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function onClickUserGroup(groupId) {
+    try {
+      const resp = await fetch(`${API_BASE}api/admin/user-groups/${groupId}/report-ids`, { credentials: "include" });
+      if (!resp.ok) throw new Error("Falha ao obter permissões do grupo.");
+      const reportIds = await resp.json(); // lista de ids
+      setCheckedReportIds(reportIds);
+    } catch (e) {
+      console.error(e);
+      alert("Não foi possível carregar os BI desse grupo.");
+    }
+  }
+
+  // Handler do botão "Cadastrar Usuário" (criar grupo + permissões)
+  document.querySelector('button[type="submit"]')?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("exampleInputUsername1").value.trim();
+    const description = document.getElementById("exampleTextarea1").value.trim();
+    const report_ids = getCheckedReportIds();
+
+    if (!name) {
+      alert("Informe o nome do grupo de usuário.");
+      return;
+    }
+
+    const payload = { name, description: description || null, report_ids };
+
+    try {
+      const resp = await fetch(`${API_BASE}api/admin/user-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      if (resp.status === 409) {
+        const err = await resp.json();
+        alert(err.detail || "Já existe um grupo com esse nome.");
+        return;
+      }
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.detail || "Erro ao criar o grupo.");
+      }
+      const data = await resp.json();
+      alert("Grupo criado com sucesso!");
+      setTimeout(() => {
+        window.location.reload(); // <<--- RELOAD AQUI
+      }, 150);
+      // ressincroniza lista de grupos existentes
+      await loadExistingUserGroups();
+      // limpa campos/seleção
+      document.getElementById("exampleInputUsername1").value = "";
+      document.getElementById("exampleTextarea1").value = "";
+      setCheckedReportIds([]);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  });
+
+  // inicia carregando grupos já existentes
+  loadExistingUserGroups();
+</script>
+
+
 {% endblock %}
 <!--FIM DO MAIN-->

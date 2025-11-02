@@ -7912,23 +7912,7 @@ pre {
   display: flex;
   flex-wrap: wrap;
   margin-right: -0.75rem;
-  margin-left: -0.75rem; 
-}
-
-.row.space-between { justify-content: space-between; }
-
-scroll-area {
-    max-height: 100px;
-    overflow-y: auto;
-    padding-right: .5rem;
-    min-height: 0;
-    display: flex;
-    justify-content: space-between;
-}
-
-.margin-cadastro{
-  margin-top: 20px;
-}
+  margin-left: -0.75rem; }
 
 .no-gutters {
   margin-right: 0;
@@ -9025,10 +9009,7 @@ textarea.tt-hint {
 .form-check {
   position: relative;
   display: block;
-  padding-left: 1.25rem; 
-  width: 200px;}
-
-
+  padding-left: 1.25rem; }
 
 .form-check-input {
   position: absolute;
@@ -15192,8 +15173,6 @@ a.text-secondary:hover, .list-wrapper a.remove:hover, a.text-secondary:focus, .l
 .text-success {
   color: #00d25b !important; }
 
-
-
 a.text-success:hover, a.text-success:focus {
   color: #00863a !important; }
 
@@ -17877,7 +17856,7 @@ div.tagsinput {
 .icon {
   display: flex;
   align-items: center;
-  justify-content: center;}
+  justify-content: center; }
   .icon.icon-box-light {
     width: 40px;
     height: 37px;
@@ -17899,8 +17878,6 @@ div.tagsinput {
     color: #0d0d0d; }
   .icon .icon-item {
     font-size: 20px; }
-
-
 
 /* Tables */
 .table, .jsgrid .jsgrid-table {

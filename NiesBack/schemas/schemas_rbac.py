@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date
-from typing import Optional, Literal
+from typing import List, Optional
 from models.models_rbac import UserStatus
 
 class UserCreate(BaseModel):
@@ -40,24 +40,18 @@ class GroupCreate(BaseModel):
     name: str
     description: Optional[str] = None
 
-class GroupOutRBAC(BaseModel):
-    id: int
+
+class UserGroupOut(BaseModel):
     name: str
     description: Optional[str]
+    report_ids: List[str] = []
     class Config:
         from_attributes = True
 
-class GroupMemberIn(BaseModel):
-    user_id: int
+class UserGroupCreate(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    description: Optional[str] = Field(None, max_length=300)
+    report_ids: List[str] = []  # permissões iniciais (opcional)
 
-class GroupReportPermissionIn(BaseModel):
-    report_id: str  # String(64) para casar com reports.id
-
-# roles/permissions
-class RoleCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-class PermissionCreate(BaseModel):
-    code: str
-    description: Optional[str] = None
+class ReportIdsIn(BaseModel):
+    report_ids: List[str]
