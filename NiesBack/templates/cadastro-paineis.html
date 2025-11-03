@@ -128,35 +128,9 @@
       <p class="card-description"> Cadastre os Painéis que exibirão os relatórios </p>
 
       <!--INICIO DO VALIDADOR DE CADASTRO-->
-      <form>
-        <h3 class="page-title">Selecione o tipo de painel que você está cadastrando</h3>
-        <div class="row">
-          <div class="col-md-3">
-            <div class="form-group">
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input type="radio" class="form-check-input" name="tipoPainel" id="radioRelatorio" value="relatorio"> Painel de Relatórios
-                </label>
-                <span class="text-small text-warning">Página com os relatórios do Power BI</span>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-group">
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input type="radio" class="form-check-input" name="tipoPainel" id="radioOrigem" value="origem"> Painel de Origem
-                </label>
-                <span class="text-small text-warning">Página principal com paineis internos</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-      <br /><br />
 
       <!-- FORM PRINCIPAL -->
-      <form class="forms-sample" id="formPainel" style="display:none;">
+      <form class="forms-sample" id="formPainel">
 
         <div class="form-group">
           <label for="exampleInputName1">Nome do Painel</label>
@@ -202,17 +176,6 @@
           <select class="js-example-basic-single" style="width:100%">
             <option value="Vigilância Sanitária - CVS">Vigilância Sanitária - CVS</option>
             <option value="Vigilância Sanitária - CVS">Vigilância Epidemiológica - CVE</option>
-          </select>
-        </div>
-
-        <div class="form-group painel-relatorio">
-          <label>Painel de Origem</label>
-          <select class="js-example-basic-single" style="width:100%">
-            <option value="Administrativo">Selecione somente se houver um painel de origem</option>
-            <option value="Administrativo">Doenças de Transmissão Hídrica e Alimentar</option>
-            <option value="Atenção Primária">Painel de Origem 2</option>
-            <option value="Gestão">Painel de Origem 3</option>
-            <option value="Saude Digital">...</option>
           </select>
         </div>
 
@@ -411,7 +374,7 @@
     <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
 
-
+<!-- 
 <script>
   // Inicialmente oculta o formulário completo
   const form = document.getElementById("formPainel");
@@ -433,7 +396,7 @@
       }
     });
   });
-</script>
+</script> -->
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
