@@ -13,12 +13,12 @@ import unicodedata
 
 router = APIRouter(prefix="/register", tags=["register"])
 
-_slug_re = re.compile(r"[^a-z0-9]+")
-def slugify(value: str) -> str:
+normalize = re.compile(r"[^a-z0-9]+")
+def normalize_words(value: str) -> str:
     value = unicodedata.normalize("NFKD", value)
     value = value.encode("ascii", "ignore").decode("ascii")  # remove acentos/ç
     value = value.lower().strip()
-    value = _slug_re.sub("-", value).strip("-")              # troca tudo que não é [a-z0-9] por "-"
+    value = normalize.sub("-", value).strip("-")              # troca tudo que não é [a-z0-9] por "-"
     return value
 
 @router.get("/report-registration-group", response_class=HTMLResponse, include_in_schema=False)
@@ -43,7 +43,7 @@ def create_report_group(
     db: Session = Depends(get_db),
     user: User = Depends(require_admin),
 ):
-    s_id = slugify(payload.name)
+    s_id = normalize_words(payload.name)
 
     # checa duplicidade por id (slug) e por nome (case-insensitive)
     has_id = db.query(Group).filter(Group.id == s_id).first()
@@ -81,7 +81,7 @@ def create_report_subgroup(
     if not parent:
         raise HTTPException(status_code=404, detail="Grupo pai não encontrado.")
 
-    s_id = slugify(payload.name)
+    s_id = normalize_words(payload.name)
 
     has_id = db.query(Group).filter(Group.id == s_id).first()
     if has_id:
