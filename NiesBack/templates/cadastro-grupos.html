@@ -35,7 +35,7 @@
               <h3 class="page-title">Cadastro de Grupos de Usuário e Painéis</h3>
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+                  <li class="breadcrumb-item"><a href="/">Inicio</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Cadastro de Grupos de Usuário</li>
                 </ol>
               </nav>
@@ -58,7 +58,7 @@
                       </div>
                       <div class="form-group">
                         <p class="card-description">Grupos de Paineis Permitidos</p>
-                      <form>
+
                         <div class="row">
                             {% for g in groups %}
                               <div class="col-6">
@@ -70,7 +70,7 @@
                               </div>
                             {% endfor %}
                         </div>
-                      </form>
+
                       </div>
                       </form>
                   </div>
@@ -82,13 +82,13 @@
                     <h4 class="card-title">Paineis Permitidos (Nível de Acesso)</h4>
                     <p class="card-description"> Selecione os Paineis Permitidos </p>
                     <div class="form-group">
-                    <form>
+                    <form id="createGroupForm" class="forms-sample">
                         <div class="row">
-                          {% for r in reports_private %}
+                          {% for r in reports %}
                           <div class="col-6">
                             <div class="form-check">
                               <label class="form-check-label">
-                                <input  class="form-check-input" type="checkbox" id = "{{r.id}}" value = "{{r.id}}"> 
+                                <input  class="form-check-input" type="checkbox" name="report" id = "{{r.id}}" value = "{{r.id}}"> 
                                   {{r.name}} </label>
                               </div>
                             </div>
@@ -122,41 +122,15 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr>
-                              <td>Master</td>
-                              <td>nenhuma descrição cadastrada</td>
-                              <td>195</td>
-                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
-                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                            {%for g in groups%}
+                            <tr>                              
+                                <td>{{g.name}}</td>
+                                <td>{{g.description}}</td>
+                                <td>{{g.total_reports}}</td>
+                                <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                                <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
                             </tr>
-                            <tr>
-                              <td>Gestão</td>
-                              <td>nenhuma descrição cadastrada</td>
-                              <td>90</td>
-                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
-                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
-                            </tr>
-                            <tr>
-                              <td>Estratégico</td>
-                              <td>nenhuma descrição cadastrada</td>
-                              <td>42</td>
-                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
-                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
-                            </tr>
-                            <tr>
-                              <td>Operacional</td>
-                              <td>nenhuma descrição cadastrada</td>
-                              <td>21</td>
-                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
-                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
-                            </tr>
-                            <tr>
-                              <td>Farmácia</td>
-                              <td>nenhuma descrição cadastrada</td>
-                              <td>9</td>
-                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
-                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
-                            </tr>
+                            {%endfor%}
                           </tbody>
                         </table>
                       </div>
@@ -211,8 +185,7 @@
     <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
 
-    <!--INICIO JS IA-->
+    <script src="{{ url_for('static', path='assets/js/cadastro-user-group.js') }}"></script>
 
-    <!--FIM JS IA-->
 
 {% endblock %}
