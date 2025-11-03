@@ -60,50 +60,15 @@
                         <p class="card-description">Grupos de Paineis Permitidos</p>
                       <form>
                         <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" disabled checked> Publicos </label>
+                            {% for g in groups %}
+                              <div class="col-6">
+                                <div class="form-check">
+                                  <label class="form-check-label" for="grp_{{ g.id }}">
+                                  <input class="form-check-input" type="checkbox" id="grp_{{ g.id }}" value="{{ g.id }}">
+                                  {{ g.name }}</label>
+                                </div>
                               </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Administrativo </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Atenção Primária </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Gestão </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Indicadores de Saúde </label>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Atenção Especializada </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Vigilância em Saúde </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Saúde Digital </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Indicadores de T.I </label>
-                              </div>
-                            </div>
-                          </div>
+                            {% endfor %}
                         </div>
                       </form>
                       </div>
@@ -116,117 +81,22 @@
                   <div class="card-body">
                     <h4 class="card-title">Paineis Permitidos (Nível de Acesso)</h4>
                     <p class="card-description"> Selecione os Paineis Permitidos </p>
+                    <div class="form-group">
                     <form>
                         <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <p class="card-description"> Painéis Publicos </p>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" disabled checked> Painéis Publicos </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 1 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 2 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 3 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 4 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 5 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 6 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 7 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 8 </label>
-                              </div>
-                               <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 9 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 10 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 11 </label>
+                          {% for r in reports_private %}
+                          <div class="col-6">
+                            <div class="form-check">
+                              <label class="form-check-label">
+                                <input  class="form-check-input" type="checkbox" id = "{{r.id}}" value = "{{r.id}}"> 
+                                  {{r.name}} </label>
                               </div>
                             </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <p class="card-description"> Painéis Privados </p>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 12</label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 13 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 14 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 15 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 16 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input" checked> Painel Privado 17 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 18 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 19 </label>
-                              </div>
-                               <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 20 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 21 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 22 </label>
-                              </div>
-                              <div class="form-check">
-                                <label class="form-check-label">
-                                  <input type="checkbox" class="form-check-input"> Painel Privado 23 </label>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          {% endfor %}
+                          </div>                        
                       <button type="submit" class="btn btn-primary mr-2">Cadastrar Grupo</button>
                     </form>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -313,33 +183,33 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
-    <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
-    <script src="assets/vendors/chart.js/Chart.min.js"></script>
-    <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
-    <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
-    <script src="assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
-     <script src="assets/vendors/select2/select2.min.js"></script>
-    <script src="assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
+    <script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+     <script src="{{ url_for('static', path='assets/vendors/select2/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/typeahead.js/typeahead.bundle.min.js') }}"></script>
     <!-- End plugin js for this page -->
     <!-- inject:js -->
-    <script src="assets/js/off-canvas.js"></script>
-    <script src="assets/js/hoverable-collapse.js"></script>
-    <script src="assets/js/misc.js"></script>
-    <script src="assets/js/settings.js"></script>
-    <script src="assets/js/todolist.js"></script>
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
     <!-- endinject -->
     <!-- Custom js for this page -->
-    <script src="assets/js/dashboard.js"></script>
+    <script src="{{ url_for('static', path='assets/js/dashboard.js') }}"></script>
     <!-- End custom js for this page -->
     <!-- Custom js for this page -->
-    <script src="assets/js/chart.js"></script>
+    <script src="{{ url_for('static', path='assets/js/chart.js') }}"></script>
     <!-- End custom js for this page -->
-    <script src="assets/js/file-upload.js"></script>
-    <script src="assets/js/typeahead.js"></script>
-    <script src="assets/js/select2.js"></script>
+    <script src="{{ url_for('static', path='assets/js/file-upload.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
 
     <!--INICIO JS IA-->
 

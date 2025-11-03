@@ -21092,14 +21092,15 @@ div.tagsinput {
 
 .page-body-wrapper {
   min-height: 100vh;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
+   /* display: -webkit-flex; */
+  /* display: flex; */
+  /* -webkit-flex-direction: row; */
+  flex-direction: row; 
   padding-left: 0;
   padding-right: 0;
   transition: all 0.25s ease;
-  width: calc(100% - 244px); }
+  /* width: calc(100% - 244px);  */
+}
   .page-body-wrapper.full-page-wrapper {
     width: 100%;
     min-height: 100vh; }
