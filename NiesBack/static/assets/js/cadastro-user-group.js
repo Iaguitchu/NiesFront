@@ -1,4 +1,3 @@
-  const API_BASE = window.location.origin + "/";
 
   function getCheckedReportIds() {
     return Array.from(document.querySelectorAll('input[name="report"]:checked'))
@@ -26,7 +25,7 @@
     };
 
     try {
-      const resp = await fetch(`${API_BASE}user-groups`, {
+      const resp = await fetch(`${API_BASE}register/user-groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

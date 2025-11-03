@@ -10,7 +10,7 @@ import uuid
 from models.models_rbac import GroupReportPermission
 from schemas.schemas_rbac import UserGroupCreate, UserGroupOut, ReportIdsIn
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter()
 
 @router.get("/user-groups")  # lista grupos (esquerda)
 def list_user_groups(

@@ -13,7 +13,7 @@ from schemas.schemas_rbac import UserGroupCreate, UserGroupOut
 from sqlalchemy import func, distinct
 
 
-router = APIRouter()
+router = APIRouter(prefix="/register", tags=["register"])
 
 @router.get("/user-registration-group", response_class=HTMLResponse, include_in_schema=False)
 def user_registration_group(
@@ -114,3 +114,15 @@ def create_user_group(
         description=grp.description,
         report_ids=payload.report_ids or [],
     )
+
+
+@router.get("/user-groups/{group_id}/report-ids")
+def list_report_ids_for_group(group_id: str, db: Session = Depends(get_db), _u: User = Depends(require_admin)):
+    rows = (
+        db.query(GroupReportPermission.report_id)
+          .filter(GroupReportPermission.group_id == group_id)
+          .all()
+    )
+    # rows pode vir como [(id,), (id,)...]
+    ids = [r[0] if isinstance(r, tuple) else getattr(r, "report_id", r) for r in rows]
+    return ids

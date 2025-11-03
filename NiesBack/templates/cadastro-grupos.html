@@ -64,7 +64,7 @@
                               <div class="col-6">
                                 <div class="form-check">
                                   <label class="form-check-label" for="grp_{{ g.id }}">
-                                  <input class="form-check-input" type="checkbox" id="grp_{{ g.id }}" value="{{ g.id }}">
+                                  <input class="form-check-input" type="checkbox" name="group" id="grp_{{ g.id }}" value="{{ g.id }}">
                                   {{ g.name }}</label>
                                 </div>
                               </div>
@@ -184,8 +184,59 @@
     <script src="{{ url_for('static', path='assets/js/file-upload.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
-
+    
+    <script > const API_BASE = window.location.origin + "/"; </script>
+    <!-- POST  -->
     <script src="{{ url_for('static', path='assets/js/cadastro-user-group.js') }}"></script>
+
+
+    <script>
+// Base da API
+
+
+// helpers
+function setCheckedReportIds(ids) {
+  const set = new Set(ids || []);
+  document.querySelectorAll('input[name="report"]').forEach(i => {
+    i.checked = set.has(i.value);
+  });
+}
+
+async function fetchReportIdsByGroup(groupId) {
+  const resp = await fetch(`${API_BASE}register/user-groups/${groupId}/report-ids`, {
+    credentials: "include"
+  });
+  if (!resp.ok) throw new Error("Falha ao obter os BI do grupo.");
+  return await resp.json(); // ["rep1","rep2",...]
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // comportamento: ao clicar num grupo, carrega SOMENTE os reports daquele grupo
+  // (se preferir união de vários grupos, explico abaixo)
+  document.querySelectorAll('input[name="group"]').forEach(cb => {
+    cb.addEventListener("change", async (e) => {
+      try {
+        // single-select: desmarca todos os outros grupos quando um é marcado
+        if (e.target.checked) {
+          document.querySelectorAll('input[name="group"]').forEach(g2 => {
+            if (g2 !== e.target) g2.checked = false;
+          });
+          const groupId = e.target.value;
+          const reportIds = await fetchReportIdsByGroup(groupId);
+          setCheckedReportIds(reportIds);
+        } else {
+          // se desmarcar o grupo atual, limpa todos os reports
+          setCheckedReportIds([]);
+        }
+      } catch (err) {
+        console.error(err);
+        alert(err.message || "Erro ao carregar painéis do grupo.");
+      }
+    });
+  });
+});
+</script>
+
 
 
 {% endblock %}
