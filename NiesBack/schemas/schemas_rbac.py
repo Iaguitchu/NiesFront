@@ -51,7 +51,19 @@ class UserGroupOut(BaseModel):
 class UserGroupCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
     description: Optional[str] = Field(None, max_length=300)
-    report_ids: List[str] = []  # permissões iniciais (opcional)
+    report_ids: List[str] = []
 
 class ReportIdsIn(BaseModel):
     report_ids: List[str]
+
+
+class ReportGroupCreate(BaseModel):
+    name: str = Field(min_length=1)
+    description: str | None = None
+    is_public: bool = True
+
+class ReportSubgroupCreate(BaseModel):
+    name: str = Field(min_length=1)
+    parent_id: str
+    description: str | None = None
+    is_public: bool = True

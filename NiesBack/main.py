@@ -7,6 +7,7 @@ from routers.reports import router as reports
 from routers.userRegistrationGroup import router as userRegistrationGroup
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from routers.reportRegistrationGroup import router as reportRegistrationGroup
 
 app = FastAPI()
 
@@ -24,6 +25,7 @@ app.include_router(auth)
 app.include_router(index)
 app.include_router(reports)
 app.include_router(userRegistrationGroup)
+app.include_router(reportRegistrationGroup)
 
 
 from fastapi.middleware.cors import CORSMiddleware

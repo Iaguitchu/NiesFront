@@ -1,0 +1,497 @@
+
+{% extends "base.html" %}
+  {% block content %}
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>NIES - SES/SP</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+     <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css') }}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{{ url_for('static', path='assets/images/favicon.png') }}" />
+  </head>
+    <div class="container-scroller">
+      <!-- partial:partials/_sidebar.html -->
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title">Cadastro de Painéis: Grupos, Subgrupos e Painéis (Relatórios)  </h3>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Cadastro de Paineis</li>
+                </ol>
+              </nav>
+            </div>
+           <!--INICIO DO MAIN-->
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Cadastrar Grupo de Painéis</h4>
+                    <p class="card-description"> Cadastre um Grupo de Painéis </p>
+                    <form class="forms-sample" id="formGrupo">
+                      <div class="form-group">
+                        <label for="inputGrupoNome">Nome do Grupo</label>
+                        <input type="text" class="form-control" id="inputGrupoNome" placeholder="Nome do Grupo">
+                      </div>
+                      <div class="form-group">
+                        <label>Tipo de Acesso</label>
+                      <select  id="selectTipoAcesso" class="js-example-basic-single" style="width:100%">
+                        <option value="Público">Público</option>
+                        <option value="Privado">Privado</option>
+                      </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputGrupoDesc">Descrição do Grupo</label>
+                        <textarea class="form-control" id="inputGrupoDesc" rows="2"></textarea>
+                      </div>
+                      <div class="form-group">
+                        <label>Ícone</label>
+                        <input type="file" name="img[]" class="file-upload-default">
+                        <div class="input-group col-xs-12">
+                          <input type="text" class="form-control file-upload-info" disabled placeholder="Escolha uma Imagem">
+                          <span class="input-group-append">
+                            <button class="file-upload-browse btn btn-primary" type="button">Procurar Imagem</button>
+                          </span>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary mr-2">Cadastrar Grupo</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Cadastrar Subgrupo de Painéis</h4>
+                    <p class="card-description"> Cadastre um Subgrupo de Painéis </p>
+                    <form class="forms-sample" id="formSubgrupo">
+                      <div class="form-group">
+                        <label for="inputSubgrupoNome">Nome do Subgrupo</label>
+                        <input type="text" class="form-control" id="inputSubgrupoNome" placeholder="Nome do Grupo">
+                      </div>
+                      <div class="form-group">
+                        <label>Grupo Pai</label>
+                          <select id="selectGrupoPai" class="js-example-basic-single" style="width:100%">
+                            {% for g in groups %}
+                              <option value="{{ g.id }}">{{ g.name }}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Tipo de Acesso</label>
+                      <select id="selectSubTipoAcesso" class="js-example-basic-single" style="width:100%">
+                        <option value="Público">Público</option>
+                        <option value="Privado">Privado</option>
+                      </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="inputSubgrupoDesc">Descrição do Subgrupo</label>
+                        <textarea class="form-control" id="inputSubgrupoDesc" rows="2"></textarea>
+                      </div>
+                      <div class="form-group">
+                        <label>Ícone</label>
+                        <input type="file" name="img[]" class="file-upload-default">
+                        <div class="input-group col-xs-12">
+                          <input type="text" class="form-control file-upload-info" disabled placeholder="Escolha uma Imagem">
+                          <span class="input-group-append">
+                            <button class="file-upload-browse btn btn-primary" type="button">Procurar Imagem</button>
+                          </span>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-primary mr-2">Cadastrar Subgrupo</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Cadastrar Painéis (Relatórios)</h4>
+      <p class="card-description"> Cadastre os Painéis que exibirão os relatórios </p>
+
+      <!--INICIO DO VALIDADOR DE CADASTRO-->
+      <form>
+        <h3 class="page-title">Selecione o tipo de painel que você está cadastrando</h3>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" name="tipoPainel" id="radioRelatorio" value="relatorio"> Painel de Relatórios
+                </label>
+                <span class="text-small text-warning">Página com os relatórios do Power BI</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="radio" class="form-check-input" name="tipoPainel" id="radioOrigem" value="origem"> Painel de Origem
+                </label>
+                <span class="text-small text-warning">Página principal com paineis internos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <br /><br />
+
+      <!-- FORM PRINCIPAL -->
+      <form class="forms-sample" id="formPainel" style="display:none;">
+
+        <div class="form-group">
+          <label for="exampleInputName1">Nome do Painel</label>
+          <input type="text" class="form-control" id="exampleInputName1" placeholder="Nome do Painel">
+        </div>
+
+        <div class="form-group painel-relatorio">
+          <label for="workspace">Workspace ID - Power BI</label>
+          <input type="text" class="form-control" id="workspace" placeholder="Informe o Workspace ID do Power BI">
+        </div>
+
+        <div class="form-group painel-relatorio">
+          <label for="report">Report ID - Power BI</label>
+          <input type="text" class="form-control" id="report" placeholder="Informe o Report ID do Power BI">
+        </div>
+
+        <div class="form-group painel-relatorio">
+          <label for="urlPower">URL - Power BI - <code>Por motivo de segurança, só informe a URL se não tiver o Workspace ID e o Report ID</code></label>
+          <input type="text" class="form-control" id="urlPower" placeholder="Informe a URL do Power BI">
+        </div>
+
+        <div class="form-group painel-relatorio">
+          <label for="urlAcesso">URL de Acesso - <code>É a URL que contará o número de acessos</code></label>
+          <input type="text" class="form-control" id="urlAcesso" placeholder="Informe a URL de Acesso">
+        </div>
+
+        <div class="form-group">
+          <label>Grupo Principal</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Administrativo">Administrativo</option>
+            <option value="Atenção Primária">Atenção Primária</option>
+            <option value="Gestão">Gestão</option>
+            <option value="Indicadores de Saúde">Indicadores de Saúde</option>
+            <option value="Atenção Especializada">Atenção Especializada</option>
+            <option value="Vigilância em Saúde">Vigilância em Saúde</option>
+            <option value="Saude Digital">Saúde Digital</option>
+            <option value="Indicadores de T.I">Indicadores de T.I</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Subgrupo</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Vigilância Sanitária - CVS">Vigilância Sanitária - CVS</option>
+            <option value="Vigilância Sanitária - CVS">Vigilância Epidemiológica - CVE</option>
+          </select>
+        </div>
+
+        <div class="form-group painel-relatorio">
+          <label>Painel de Origem</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Administrativo">Selecione somente se houver um painel de origem</option>
+            <option value="Administrativo">Doenças de Transmissão Hídrica e Alimentar</option>
+            <option value="Atenção Primária">Painel de Origem 2</option>
+            <option value="Gestão">Painel de Origem 3</option>
+            <option value="Saude Digital">...</option>
+          </select>
+        </div>
+
+        <br />
+        <h3 class="page-title">Nível de Acesso do Painel</h3>
+        <div class="row">
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input" checked> Gestão
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input"> Estratégico
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input"> Operacional
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-check">
+                <label class="form-check-label">
+                  <input type="checkbox" class="form-check-input"> Outros
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br />
+        <div class="form-group">
+          <label>Tipo de Acesso</label>
+          <select class="js-example-basic-single" style="width:100%">
+            <option value="Público">Público</option>
+            <option value="Privado">Privado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Imagem do Painel</label>
+          <input type="file" name="img[]" class="file-upload-default">
+          <div class="input-group col-xs-12">
+            <input type="text" class="form-control file-upload-info" disabled placeholder="Selecione uma Imagem">
+            <span class="input-group-append">
+              <button class="file-upload-browse btn btn-primary" type="button">Procurar</button>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="exampleTextarea1">Descrição do Painel</label>
+          <textarea class="form-control" id="exampleTextarea1" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mr-2">Cadastrar Painel</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+              <!--INICIO LISTAGEM DE PAINÉIS-->
+              <div class="col-lg-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Painéis (Relatórios) Cadastrados</h4>
+                      <p class="card-description">Selecione o painel que deseja editar e <code>clique em editar</code></p>
+                      <div class="table-responsive">
+                        <form class="form-inline">
+                          <input type="text" class="form-control mb-2 mr-sm-2 col-lg-3" id="inlineFormInputName2" placeholder="Digite o nome do painel que deseja pesquisar">
+                          <button type="submit" class="btn btn-primary mb-2">Filtrar Painéis</button>
+                        </form>
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Nome do painel</th>
+                              <th>Grupo Pai</th>
+                              <th>Tipo de Acesso</th>
+                              <th>Tipo de Painel</th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>Doenças de Transmissão Hidrica e Alimentar - DTHA</td>
+                              <td>Vigilância em Saúde >> CVS</td>
+                              <td>Publico</td>
+                              <td>Origem (Página Principal)</td>
+                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                              <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                            </tr>
+                            <tr>
+                              <td>Mapa de Estabelecimentos</td>
+                              <td>Indicadores de Saúde</td>
+                              <td>Publico</td>
+                              <td>Relatório (Power BI)</td>
+                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                              <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                            </tr>
+                            <tr>
+                              <td>Indicadores Ouvidoria</td>
+                              <td>Indicadores de Saúde</td>
+                              <td>Privado</td>
+                              <td>Relatório (Power BI)</td>
+                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                              <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                            </tr>
+                            <tr>
+                              <td>Gestão de Agrotoxicos</td>
+                              <td>Vigilância em Saúde</td>
+                              <td>Publico</td>
+                              <td>Relatório (Power BI)</td>
+                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                              <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                            </tr>
+                            <tr>
+                              <td>Hemocentros</td>
+                              <td>Gestão</td>
+                              <td>Privado</td>
+                              <td>Relatório (Power BI)</td>
+                              <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                              <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
+                              <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <!--FIM LISTAGEM DE PAINÉIS-->
+            </div>
+            <!--FIM DO MAIN-->
+          </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Todos os direitos reservados © Governo do Estado de São Paulo</span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> GIS - Grupo de Informática em Saúde</span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/select2/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/vendors/typeahead.js/typeahead.bundle.min.js') }}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{{ url_for('static', path='assets/js/dashboard.js') }}"></script>
+    <!-- End custom js for this page -->
+    <!-- Custom js for this page -->
+    <script src="{{ url_for('static', path='assets/js/chart.js') }}"></script>
+    <!-- End custom js for this page -->
+    <script src="{{ url_for('static', path='assets/js/file-upload.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
+    <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
+
+
+<script>
+  // Inicialmente oculta o formulário completo
+  const form = document.getElementById("formPainel");
+  const camposRelatorio = document.querySelectorAll(".painel-relatorio");
+  const campoOrigem = document.querySelectorAll(".painel-origem");
+
+  document.querySelectorAll('input[name="tipoPainel"]').forEach(radio => {
+    radio.addEventListener("change", function() {
+      form.style.display = "block";
+
+      if (this.value === "relatorio") {
+        // Mostra tudo, exceto painel de origem
+        campoOrigem.forEach(el => el.style.display = "none");
+        camposRelatorio.forEach(el => el.style.display = "block");
+      } else if (this.value === "origem") {
+        // Mostra tudo, exceto campos de Power BI
+        campoOrigem.forEach(el => el.style.display = "block");
+        camposRelatorio.forEach(el => el.style.display = "none");
+      }
+    });
+  });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const API_BASE = window.location.origin + "/";
+
+  const formGrupo = document.querySelector("#formGrupo");
+  if (formGrupo) {
+    formGrupo.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.querySelector("#inputGrupoNome").value.trim();
+      const description = document.querySelector("#inputGrupoDesc").value.trim();
+      const is_public = document.querySelector("#selectTipoAcesso").value === "public";
+
+      const resp = await fetch(`${API_BASE}register/report-groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, description, is_public }),
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        alert(data.detail || "Erro ao cadastrar grupo.");
+        return;
+      }
+      alert(data.message || "Grupo criado!");
+      location.reload();
+    });
+  }
+
+  const formSub = document.querySelector("#formSubgrupo");
+  if (formSub) {
+    formSub.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.querySelector("#inputSubgrupoNome").value.trim();
+      const parent_id = document.querySelector("#selectGrupoPai").value;
+      const description = document.querySelector("#inputSubgrupoDesc").value.trim();
+      const is_public = document.querySelector("#selectSubTipoAcesso").value === "public";
+
+      const resp = await fetch(`${API_BASE}register/report-subgroups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, parent_id, description, is_public }),
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        alert(data.detail || "Erro ao cadastrar subgrupo.");
+        return;
+      }
+      alert(data.message || "Subgrupo criado!");
+      location.reload();
+    });
+  }
+});
+</script>
+
+
+{% endblock %}
+
