@@ -28,14 +28,48 @@ def report_registration_group(
     db: Session = Depends(get_db),
     user: User = Depends(require_admin),
 ):
+    # pega todos os grupos (1 query)
     groups = (
-        db.query(Group)
+        db.query(Group.id, Group.name, Group.parent_id)
           .filter(Group.is_active.is_(True))
           .order_by(Group.name.asc())
           .all()
     )
-    ctx = {"request": request, "user": user, "groups": groups}
+    gmap = {}
+    for g in groups:
+        gmap[g.id] = {"name": g.name, "parent_id": g.parent_id}
+
+    def build_path(group_id: str) -> str:
+        parts = []
+        seen = set()
+        gid = group_id
+        # sobe até a raiz (protege contra ciclos)
+        while gid and gid in gmap and gid not in seen:
+            parts.append(gmap[gid]["name"])
+            seen.add(gid)
+            gid = gmap[gid]["parent_id"]
+        return " >> ".join(reversed(parts)) if parts else "-"
+
+    # pega reports ativos (1 query)
+    reports = db.query(Report).filter(Report.is_active.is_(True)).all()
+
+    # prepara linhas para o template
+    report_rows = []
+    for r in reports:
+        row = {
+            "r": r,
+            "group_path": build_path(r.group_id)
+        }
+        report_rows.append(row)
+        
+    ctx = {
+        "request": request,
+        "user": user,
+        "groups": groups,
+        "report_rows": report_rows
+    }
     return templates.TemplateResponse("cadastro-paineis.html", ctx)
+
 
 
 @router.post("/report-groups", status_code=status.HTTP_201_CREATED)
@@ -49,14 +83,6 @@ def create_report_group(
     # checa duplicidade por id (slug) e por nome (case-insensitive)
     has_id = db.query(Group).filter(Group.id == s_id).first()
     if has_id:
-        raise HTTPException(status_code=409, detail="Já existe um grupo com este ID (slug).")
-
-    has_name = (
-        db.query(Group)
-          .filter(func.lower(Group.name) == func.lower(payload.name))
-          .first()
-    )
-    if has_name:
         raise HTTPException(status_code=409, detail="Já existe um grupo com este nome.")
 
     grp = Group(
@@ -84,7 +110,7 @@ def create_report_subgroup(
 
     has_id = db.query(Group).filter(Group.id == s_id).first()
     if has_id:
-        raise HTTPException(status_code=409, detail="Já existe um subgrupo com este ID (slug).")
+        raise HTTPException(status_code=409, detail="Já existe um subgrupo com este nome.")
 
     has_name_same_parent = (
         db.query(Group)
