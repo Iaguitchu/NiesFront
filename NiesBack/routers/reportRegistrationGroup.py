@@ -68,6 +68,7 @@ def report_registration_group(
         "groups": groups,
         "report_rows": report_rows
     }
+
     return templates.TemplateResponse("cadastro-paineis.html", ctx)
 
 
