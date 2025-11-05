@@ -95,77 +95,37 @@
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-calculator"></i>
-              </span>
-              <span class="menu-title">Administrativo</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-playlist-play"></i>
-              </span>
-              <span class="menu-title">Atenção Primária</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-table-large"></i>
-              </span>
-              <span class="menu-title">Gestão</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-chart-bar"></i>
-              </span>
-              <span class="menu-title">Indicadores de Saúde</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-contacts"></i>
-              </span>
-              <span class="menu-title">Atenção Especializada</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <span class="menu-icon">
-                <i class="mdi mdi-security"></i>
-              </span>
-              <span class="menu-title">Vigilância em Saúde</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="auth">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="#"> Sanitária - CVS </a></li>
-                <li class="nav-item"> <a class="nav-link" href="#"> Epidemiológica - CVS </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-laptop"></i>
-              </span>
-              <span class="menu-title">Saúde Digital</span>
-            </a>
-          </li>
-          <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
-              <span class="menu-icon">
-                <i class="mdi mdi-playlist-check"></i>
-              </span>
-              <span class="menu-title">Indicadores de T.I</span>
-            </a>
-          </li>
+              {% for g in menu %}
+                {% set has_children = g.children and g.children|length > 0 %}
+                  <li class="nav-item menu-items">
+                    {% if has_children %}
+                      <a class="nav-link" data-toggle="collapse" href="#g{{ g.id }}" aria-expanded="false" aria-controls="g{{ g.id }}">
+                        <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
+                        <span class="menu-title">{{ g.name }}</span>
+                        <i class="menu-arrow"></i>
+                      </a>
+                      <div class="collapse" id="g{{ g.id }}">
+                        <ul class="nav flex-column sub-menu">
+                          {# Link “grupo pai” lista relatórios do próprio pai #}
+                          <li class="nav-item">
+                            <a class="nav-link" href="/g/{{ g.id }}">{{ g.name }}</a>
+                          </li>
+                          {# Filhos (1 nível) #}
+                          {% for c in g.children %}
+                            <li class="nav-item">
+                              <a class="nav-link" href="/g/{{ c.id }}">{{ c.name }}</a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    {% else %}
+                      <a class="nav-link" href="/g/{{ g.id }}">
+                        <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
+                        <span class="menu-title">{{ g.name }}</span>
+                      </a>
+                    {% endif %}
+                  </li>
+              {% endfor %}
         </ul>
       </nav>
       <!-- Parciais -->

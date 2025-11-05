@@ -11,6 +11,7 @@ from schemas.schemas_rbac import ReportGroupCreate, ReportSubgroupCreate
 from schemas.schemas import ReportOut, ReportAccessLevelEnum
 import re
 import unicodedata
+from collections import defaultdict
 
 router = APIRouter(prefix="/register", tags=["register"])
 
@@ -28,6 +29,35 @@ def report_registration_group(
     db: Session = Depends(get_db),
     user: User = Depends(require_admin),
 ):
+    
+        # ----------------- MENU (2 níveis) -----------------
+    groups = (
+        db.query(Group.id, Group.name, Group.parent_id)
+          .filter(Group.is_active.is_(True))
+          .all()
+    )
+
+    parents: list[dict] = []
+    children_by_parent: dict[str, list[dict]] = defaultdict(list)
+
+    for g in groups:
+        item = {"id": g.id, "name": g.name}
+        if g.parent_id is None:
+            parents.append(item)
+        else:
+            # guarda TODOS os filhos do pai
+            children_by_parent[g.parent_id].append(item)
+
+    # ordenações (opcional)
+    parents.sort(key=lambda x: x["name"].lower())
+    for kids in children_by_parent.values():
+        kids.sort(key=lambda x: x["name"].lower())
+
+    # monta a estrutura final: pai + filhos diretos (sem netos)
+    menu = [
+        {"id": p["id"], "name": p["name"], "children": children_by_parent.get(p["id"], [])}
+        for p in parents
+    ]
     # pega todos os grupos (1 query)
     groups = (
         db.query(Group.id, Group.name, Group.parent_id)
@@ -66,7 +96,8 @@ def report_registration_group(
         "request": request,
         "user": user,
         "groups": groups,
-        "report_rows": report_rows
+        "report_rows": report_rows,
+        "menu": menu
     }
 
     return templates.TemplateResponse("cadastro-paineis.html", ctx)

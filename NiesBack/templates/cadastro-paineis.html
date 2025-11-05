@@ -346,29 +346,6 @@
     <script src="{{ url_for('static', path='assets/js/typeahead.js') }}"></script>
     <script src="{{ url_for('static', path='assets/js/select2.js') }}"></script>
 
-<!-- 
-<script>
-  // Inicialmente oculta o formulário completo
-  const form = document.getElementById("formPainel");
-  const camposRelatorio = document.querySelectorAll(".painel-relatorio");
-  const campoOrigem = document.querySelectorAll(".painel-origem");
-
-  document.querySelectorAll('input[name="tipoPainel"]').forEach(radio => {
-    radio.addEventListener("change", function() {
-      form.style.display = "block";
-
-      if (this.value === "relatorio") {
-        // Mostra tudo, exceto painel de origem
-        campoOrigem.forEach(el => el.style.display = "none");
-        camposRelatorio.forEach(el => el.style.display = "block");
-      } else if (this.value === "origem") {
-        // Mostra tudo, exceto campos de Power BI
-        campoOrigem.forEach(el => el.style.display = "block");
-        camposRelatorio.forEach(el => el.style.display = "none");
-      }
-    });
-  });
-</script> -->
  <script>
   const API_BASE = window.location.origin + "/";
 </script>

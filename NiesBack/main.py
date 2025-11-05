@@ -6,7 +6,6 @@ from routers.index import router as index
 from routers.reports import router as reports
 from routers.userRegistrationGroup import router as userRegistrationGroup
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from routers.reportRegistrationGroup import router as reportRegistrationGroup
 
 app = FastAPI()
@@ -14,8 +13,6 @@ app = FastAPI()
 # static em /static
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# templates Jinja (como no Flask)
-templates = Jinja2Templates(directory="templates")
 
 
 

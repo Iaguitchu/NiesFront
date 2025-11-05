@@ -89,8 +89,6 @@ def login(data: LoginIn, response: Response, db: Session = Depends(get_db)):
 
 
 
-# ... imports dos seus helpers e settings ...
-
 @router.post("/refresh", response_model=TokenOut)
 def refresh_token(
     request: Request,
