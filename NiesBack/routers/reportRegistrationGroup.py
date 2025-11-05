@@ -3,11 +3,12 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from db import get_db
-from models.models import Group
+from models.models import Group, Report, ReportAccessLevel, AccessLevel
 from models.models_rbac import User
 from services.security import require_admin
 from core.templates import templates
 from schemas.schemas_rbac import ReportGroupCreate, ReportSubgroupCreate
+from schemas.schemas import ReportOut, ReportAccessLevelEnum
 import re
 import unicodedata
 
@@ -62,9 +63,7 @@ def create_report_group(
         id=s_id,
         name=payload.name.strip(),
         is_active=True,
-        # is_public/description adicionar depois
-        # description=payload.description,
-        # is_public=payload.is_public,
+        description=payload.description,
     )
     db.add(grp)
     db.commit()
@@ -103,11 +102,83 @@ def create_report_subgroup(
         name=payload.name.strip(),
         parent_id=payload.parent_id,
         is_active=True,
-        # is_public/description adicionar depois
-        # description=payload.description,
-        # is_public=payload.is_public,
+        description=payload.description
     )
     db.add(sub)
     db.commit()
     db.refresh(sub)
     return {"message": "Subgrupo criado com sucesso!", "id": sub.id}
+
+
+@router.post("/reports", response_model=ReportOut)
+def create_report(payload: ReportOut, db: Session = Depends(get_db)):
+    has_url = bool(payload.powerbi_url)
+    has_ids = bool(payload.workspace_id and payload.report_id)
+
+    # define o id (slug)
+    if not payload.id:
+        s_id = normalize_words(payload.name)
+        exists = db.query(Report).filter(Report.id == s_id).first()
+        if exists:
+            raise HTTPException(status_code=409, detail="Já existe um powerbi com este Nome.")
+    else:
+        s_id = normalize_words(payload.id)
+
+    # valida modo PowerBI (XOR)
+    if not (has_url ^ has_ids):
+        raise HTTPException(
+            status_code=400,
+            detail="Envie OU powerbi_url OU (workspace_id e report_id)."
+        )
+
+    # cria o Report
+    report = Report(
+        id=s_id,
+        name=payload.name,
+        group_id=payload.group_id,
+        description=payload.description,
+        image_url=payload.image_url,
+        powerbi_url=payload.powerbi_url if has_url else None,
+        workspace_id=payload.workspace_id if has_ids else None,
+        report_id=payload.report_id if has_ids else None,
+        is_public=payload.is_public,
+    )
+    db.add(report)
+    db.flush()  # garante report.id disponível para as FKs
+
+    # popula N níveis de acesso
+    # payload.access_levels é uma lista de ReportAccessLevelEnum
+    for lvl in payload.access_levels:
+        # lvl pode ser Enum ou str; vamos normalizar para o Enum do modelo
+        if isinstance(lvl, str):
+            lvl_value = lvl
+        else:
+            lvl_value = lvl.value  # Enum -> str
+
+        db.add(ReportAccessLevel(
+            report_id=report.id,
+            level=AccessLevel(lvl_value)  # converte para Enum do modelo
+        ))
+
+    db.commit()
+    db.refresh(report)
+
+    # monta saída com os níveis já persistidos
+    out_levels = [
+        ReportAccessLevelEnum(ra.level.value)  # model Enum -> schema Enum
+        for ra in report.access_levels
+    ]
+
+    return ReportOut(
+        id=report.id,
+        name=report.name,
+        title_description=report.title_description,
+        description=report.description,
+        image_url=report.image_url,
+        powerbi_url=report.powerbi_url,
+        workspace_id=report.workspace_id,
+        report_id=report.report_id,
+        group_id=report.group_id,
+        is_public=report.is_public,
+        access_levels=out_levels,
+    )

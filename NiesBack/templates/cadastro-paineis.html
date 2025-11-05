@@ -51,13 +51,13 @@
                         <label for="inputGrupoNome">Nome do Grupo</label>
                         <input type="text" class="form-control" id="inputGrupoNome" placeholder="Nome do Grupo">
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label>Tipo de Acesso</label>
                       <select  id="selectTipoAcesso" class="js-example-basic-single" style="width:100%">
                         <option value="Público">Público</option>
                         <option value="Privado">Privado</option>
                       </select>
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <label for="inputGrupoDesc">Descrição do Grupo</label>
                         <textarea class="form-control" id="inputGrupoDesc" rows="2"></textarea>
@@ -95,13 +95,13 @@
                             {% endfor %}
                           </select>
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label>Tipo de Acesso</label>
                       <select id="selectSubTipoAcesso" class="js-example-basic-single" style="width:100%">
                         <option value="Público">Público</option>
                         <option value="Privado">Privado</option>
                       </select>
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <label for="inputSubgrupoDesc">Descrição do Subgrupo</label>
                         <textarea class="form-control" id="inputSubgrupoDesc" rows="2"></textarea>
@@ -136,7 +136,28 @@
           <label for="exampleInputName1">Nome do Painel</label>
           <input type="text" class="form-control" id="exampleInputName1" placeholder="Nome do Painel">
         </div>
+         <div class="form-group">
+          <label for="inputCustomId">URL</label>
+          <input type="text" class="form-control" id="inputCustomId" placeholder="URL do Painel">
+        </div>
+        <div class="form-group">
+          <label>Origem do Painel (Power BI)</label>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input type="radio" name="modoPowerBI" class="form-check-input" value="ids" checked>
+              Workspace + Report IDs
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <label class="form-check-label">
+              <input type="radio" name="modoPowerBI" class="form-check-input" value="url">
+              URL direta
+            </label>
+          </div>
+        </div>
 
+        <!-- bloco mostrado quando modo=ids -->
+      <div class="modo-ids">
         <div class="form-group painel-relatorio">
           <label for="workspace">Workspace ID - Power BI</label>
           <input type="text" class="form-control" id="workspace" placeholder="Informe o Workspace ID do Power BI">
@@ -146,38 +167,25 @@
           <label for="report">Report ID - Power BI</label>
           <input type="text" class="form-control" id="report" placeholder="Informe o Report ID do Power BI">
         </div>
+      </div>
 
+      <!-- bloco mostrado quando modo=url -->
+      <div class="modo-url" style="display:none">
         <div class="form-group painel-relatorio">
-          <label for="urlPower">URL - Power BI - <code>Por motivo de segurança, só informe a URL se não tiver o Workspace ID e o Report ID</code></label>
+          <label for="urlPower">URL - Power BI</label>
           <input type="text" class="form-control" id="urlPower" placeholder="Informe a URL do Power BI">
         </div>
-
-        <div class="form-group painel-relatorio">
-          <label for="urlAcesso">URL de Acesso - <code>É a URL que contará o número de acessos</code></label>
-          <input type="text" class="form-control" id="urlAcesso" placeholder="Informe a URL de Acesso">
-        </div>
+      </div>
 
         <div class="form-group">
-          <label>Grupo Principal</label>
-          <select class="js-example-basic-single" style="width:100%">
-            <option value="Administrativo">Administrativo</option>
-            <option value="Atenção Primária">Atenção Primária</option>
-            <option value="Gestão">Gestão</option>
-            <option value="Indicadores de Saúde">Indicadores de Saúde</option>
-            <option value="Atenção Especializada">Atenção Especializada</option>
-            <option value="Vigilância em Saúde">Vigilância em Saúde</option>
-            <option value="Saude Digital">Saúde Digital</option>
-            <option value="Indicadores de T.I">Indicadores de T.I</option>
-          </select>
+          <label>Grupo Pai</label>
+            <select id="selectGrupo" class="js-example-basic-single" style="width:100%">
+              {% for g in groups %}
+                <option value="{{ g.id }}">{{ g.name }}</option>
+              {% endfor %}
+            </select>
         </div>
 
-        <div class="form-group">
-          <label>Subgrupo</label>
-          <select class="js-example-basic-single" style="width:100%">
-            <option value="Vigilância Sanitária - CVS">Vigilância Sanitária - CVS</option>
-            <option value="Vigilância Sanitária - CVS">Vigilância Epidemiológica - CVE</option>
-          </select>
-        </div>
 
         <br />
         <h3 class="page-title">Nível de Acesso do Painel</h3>
@@ -397,36 +405,52 @@
     });
   });
 </script> -->
-
+ <script>
+  const API_BASE = window.location.origin + "/";
+</script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE = window.location.origin + "/";
+  
 
+  // --- alterna UI url x ids ---
+  const radiosModo = document.querySelectorAll('input[name="modoPowerBI"]');
+  const blocoIds = document.querySelector(".modo-ids");
+  const blocoUrl = document.querySelector(".modo-url");
+  function applyModo(v) {
+    if (v === "url") {
+      blocoUrl.style.display = "block";
+      blocoIds.style.display = "none";
+    } else {
+      blocoUrl.style.display = "none";
+      blocoIds.style.display = "block";
+    }
+  }
+  radiosModo.forEach(r => r.addEventListener("change", e => applyModo(e.target.value)));
+  applyModo(document.querySelector('input[name="modoPowerBI"]:checked').value);
+
+  // --- cadastrar grupo (igual você já fez) ---
   const formGrupo = document.querySelector("#formGrupo");
   if (formGrupo) {
     formGrupo.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.querySelector("#inputGrupoNome").value.trim();
       const description = document.querySelector("#inputGrupoDesc").value.trim();
-      const is_public = document.querySelector("#selectTipoAcesso").value === "public";
 
       const resp = await fetch(`${API_BASE}register/report-groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, description, is_public }),
+        body: JSON.stringify({ name, description }),
       });
 
       const data = await resp.json().catch(() => ({}));
-      if (!resp.ok) {
-        alert(data.detail || "Erro ao cadastrar grupo.");
-        return;
-      }
+      if (!resp.ok) return alert(data.detail || "Erro ao cadastrar grupo.");
       alert(data.message || "Grupo criado!");
       location.reload();
     });
   }
 
+  // --- cadastrar subgrupo (igual você já fez) ---
   const formSub = document.querySelector("#formSubgrupo");
   if (formSub) {
     formSub.addEventListener("submit", async (e) => {
@@ -434,26 +458,210 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = document.querySelector("#inputSubgrupoNome").value.trim();
       const parent_id = document.querySelector("#selectGrupoPai").value;
       const description = document.querySelector("#inputSubgrupoDesc").value.trim();
-      const is_public = document.querySelector("#selectSubTipoAcesso").value === "public";
 
       const resp = await fetch(`${API_BASE}register/report-subgroups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, parent_id, description, is_public }),
+        body: JSON.stringify({ name, parent_id, description }),
       });
 
       const data = await resp.json().catch(() => ({}));
-      if (!resp.ok) {
-        alert(data.detail || "Erro ao cadastrar subgrupo.");
-        return;
-      }
+      if (!resp.ok) return alert(data.detail || "Erro ao cadastrar subgrupo.");
       alert(data.message || "Subgrupo criado!");
+      location.reload();
+    });
+  }
+
+  // --- cadastrar PAINEL/RELATÓRIO ---
+  const formPainel = document.querySelector("#formPainel");
+  if (formPainel) {
+    formPainel.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const modo = document.querySelector('input[name="modoPowerBI"]:checked').value; // "ids" | "url"
+      const name = document.querySelector("#exampleInputName1").value.trim();
+      const workspace_id = document.querySelector("#workspace")?.value.trim();
+      const report_id = document.querySelector("#report")?.value.trim();
+      const powerbi_url = document.querySelector("#urlPower")?.value.trim();
+      const descricao = document.querySelector("#exampleTextarea1")?.value.trim();
+
+      // TODO: pegue o group_id e subgrupo_id reais dos seus selects (aqui estão hardcoded no HTML)
+      // Exemplo: <select id="selectGroupPrincipal"> e <select id="selectSubgrupo">
+      const group_id = "coloque-o-id-do-grupo-aqui";
+      const is_public = true; // ou pegue do select "Tipo de Acesso"
+
+      // Access levels (pegando pelos labels marcados)
+      const access_levels = [];
+      document.querySelectorAll('.form-check-input').forEach((cb) => {
+        if (cb.checked) {
+          const label = cb.closest('label').innerText.trim().toLowerCase();
+          if (label.includes("gestão")) access_levels.push("gestao");
+          else if (label.includes("estratégico")) access_levels.push("estrategico");
+          else if (label.includes("operacional")) access_levels.push("operacional");
+          else if (label.includes("outros")) access_levels.push("outros");
+        }
+      });
+
+      // Monta o payload simples (sem discriminator)
+      const payload = {
+        name,
+        group_id,
+        description: descricao || null,
+        is_public,
+        access_levels,
+        powerbi_url: null,
+        workspace_id: null,
+        report_id: null,
+      };
+
+      if (modo === "url") {
+        payload.powerbi_url = powerbi_url || null;
+      } else {
+        payload.workspace_id = workspace_id || null;
+        payload.report_id = report_id || null;
+      }
+
+      // Validação mínima no front (opcional)
+      if (modo === "url" && !payload.powerbi_url) {
+        return alert("Informe a URL do Power BI.");
+      }
+      if (modo === "ids" && (!payload.workspace_id || !payload.report_id)) {
+        return alert("Informe Workspace ID e Report ID.");
+      }
+      if (!payload.name) return alert("Informe o nome do painel.");
+
+      const resp = await fetch(`${API_BASE}register/reports`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) return alert(data.detail || "Erro ao cadastrar painel.");
+      alert(data.message || "Painel cadastrado!");
       location.reload();
     });
   }
 });
 </script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // alterna UI entre URL direta x IDs
+  const radiosModo = document.querySelectorAll('input[name="modoPowerBI"]');
+  const blocoIds = document.querySelector(".modo-ids");
+  const blocoUrl = document.querySelector(".modo-url");
+  function applyModo(v) {
+    const w = document.querySelector("#workspace");
+    const r = document.querySelector("#report");
+    const u = document.querySelector("#urlPower");
+    if (v === "url") {
+      blocoUrl.style.display = "block";
+      blocoIds.style.display = "none";
+      if (w) w.value = "";
+      if (r) r.value = "";
+      if (w) w.disabled = true;
+      if (r) r.disabled = true;
+      if (u) u.disabled = false;
+    } else {
+      blocoUrl.style.display = "none";
+      blocoIds.style.display = "block";
+      if (u) u.value = "";
+      if (u) u.disabled = true;
+      if (w) w.disabled = false;
+      if (r) r.disabled = false;
+    }
+  }
+  radiosModo.forEach(r => r.addEventListener("change", e => applyModo(e.target.value)));
+  applyModo(document.querySelector('input[name="modoPowerBI"]:checked').value);
+
+  // mesma lógica do back pra slug/ID
+  function normalizeWords(v) {
+    if (!v) return v;
+    v = v.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    v = v.toLowerCase().trim();
+    v = v.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return v;
+  }
+
+  // --- cadastrar PAINEL/RELATÓRIO ---
+  const formPainel = document.querySelector("#formPainel");
+  if (formPainel) {
+    formPainel.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const modo = document.querySelector('input[name="modoPowerBI"]:checked').value; // "ids" | "url"
+      const name = document.querySelector("#exampleInputName1")?.value.trim();
+      const customIdRaw = document.querySelector("#inputCustomId")?.value.trim(); // seu campo "URL" = ID opcional
+      const workspace_id = document.querySelector("#workspace")?.value.trim();
+      const report_id = document.querySelector("#report")?.value.trim();
+      const powerbi_url = document.querySelector("#urlPower")?.value.trim();
+      const description = document.querySelector("#exampleTextarea1")?.value.trim();
+      const group_id = document.querySelector("#selectGrupo")?.value;
+
+      if (!name) return alert("Informe o nome do painel.");
+      if (!group_id) return alert("Selecione um grupo.");
+
+      if (modo === "url" && !powerbi_url) {
+        return alert("Informe a URL do Power BI.");
+      }
+      if (modo === "ids" && (!workspace_id || !report_id)) {
+        return alert("Informe Workspace ID e Report ID.");
+      }
+
+      // níveis de acesso (apenas os checkboxes dentro do form do painel)
+      const access_levels = [];
+      document.querySelectorAll('#formPainel .form-check-input[type="checkbox"]:checked').forEach((cb) => {
+        const label = cb.closest('label').innerText.trim().toLowerCase();
+        if (label.includes("gestão")) access_levels.push("gestao");
+        else if (label.includes("estratégico")) access_levels.push("estrategico");
+        else if (label.includes("operacional")) access_levels.push("operacional");
+        else if (label.includes("outros")) access_levels.push("outros");
+      });
+
+      // payload (id custom opcional; se não mandar, o back gera pelo name)
+      const payload = {
+        ...(customIdRaw ? { id: normalizeWords(customIdRaw) } : {}),
+        name,
+        group_id,
+        description: description || null,
+        is_public: true,                 // ajuste conforme seu select de "Tipo de Acesso"
+        access_levels,
+        image_url: null,
+        title_description: null,
+        powerbi_url: (modo === "url") ? (powerbi_url || null) : null,
+        workspace_id: (modo === "ids") ? (workspace_id || null) : null,
+        report_id:   (modo === "ids") ? (report_id   || null) : null,
+      };
+
+      try {
+        const resp = await fetch(`${API_BASE}register/reports`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          return alert(data.detail || "Erro ao cadastrar painel.");
+        }
+        alert(`Painel "${data.name || name}" cadastrado!`);
+        location.reload();
+      } catch (err) {
+        console.error(err);
+        alert("Falha de rede ao cadastrar painel.");
+      }
+    });
+  }
+});
+</script>
+
+
 
 
 {% endblock %}
