@@ -87,45 +87,47 @@
           <li class="nav-item nav-category">
             <span class="nav-link">Grupos de Paineis</span>
           </li>
+
           <li class="nav-item menu-items">
             <a class="nav-link" href="/">
-              <span class="menu-icon">
-                <i class="mdi mdi-speedometer"></i>
-              </span>
+              <span class="menu-icon"><i class="mdi mdi-speedometer"></i></span>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-              {% for g in menu %}
-                {% set has_children = g.children and g.children|length > 0 %}
-                  <li class="nav-item menu-items">
-                    {% if has_children %}
-                      <a class="nav-link" data-toggle="collapse" href="#g{{ g.id }}" aria-expanded="false" aria-controls="g{{ g.id }}">
-                        <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
-                        <span class="menu-title">{{ g.name }}</span>
-                        <i class="menu-arrow"></i>
-                      </a>
-                      <div class="collapse" id="g{{ g.id }}">
-                        <ul class="nav flex-column sub-menu">
-                          {# Link “grupo pai” lista relatórios do próprio pai #}
-                          <li class="nav-item">
-                            <a class="nav-link" href="/g/{{ g.id }}">{{ g.name }}</a>
-                          </li>
-                          {# Filhos (1 nível) #}
-                          {% for c in g.children %}
-                            <li class="nav-item">
-                              <a class="nav-link" href="/g/{{ c.id }}">{{ c.name }}</a>
-                            </li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-                    {% else %}
-                      <a class="nav-link" href="/g/{{ g.id }}">
-                        <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
-                        <span class="menu-title">{{ g.name }}</span>
-                      </a>
-                    {% endif %}
-                  </li>
-              {% endfor %}
+          {# pega o menu do request.state; garante lista vazia se não houver #}
+          {% set MENU = request.state.menu or [] %}
+
+          {% for g in MENU %}
+            {% set has_children = g.children and g.children|length > 0 %}
+            {% set cid = ('g' ~ g.id)|replace(' ', '_') %}
+
+            <li class="nav-item menu-items">
+              {% if has_children %}
+                <a class="nav-link" data-toggle="collapse" href="#{{ cid }}" aria-expanded="false" aria-controls="{{ cid }}">
+                  <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
+                  <span class="menu-title">{{ g.name }}</span>
+                  <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="{{ cid }}">
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="/g/{{ g.id }}">{{ g.name }}</a>
+                    </li>
+                    {% for c in g.children %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="/g/{{ c.id }}">{{ c.name }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% else %}
+                <a class="nav-link" href="/g/{{ g.id }}">
+                  <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
+                  <span class="menu-title">{{ g.name }}</span>
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
         </ul>
       </nav>
       <!-- Parciais -->

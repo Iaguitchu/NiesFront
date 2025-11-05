@@ -10,8 +10,9 @@ from core.templates import templates
 from models.models import Report
 from models.models_rbac import User, UserGroupMember, GroupReportPermission
 from services.security import get_current_user_optional
+from core.deps import with_menu
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(with_menu)])
 
 @router.get("/report/{report_id}", response_class=HTMLResponse)
 def report_view(

@@ -9,8 +9,10 @@ from models.models import Group, Report
 from models.models_rbac import User, UserGroupMember, GroupReportPermission
 from services.security import get_current_user_optional
 from core.templates import templates
+from core.deps import with_menu
 
-router = APIRouter()
+
+router = APIRouter(dependencies=[Depends(with_menu)])
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 def home(
@@ -18,35 +20,6 @@ def home(
     db: Session = Depends(get_db),
     user: User | None = Depends(get_current_user_optional),
 ):
-    # ----------------- MENU (2 níveis) -----------------
-    groups = (
-        db.query(Group.id, Group.name, Group.parent_id)
-          .filter(Group.is_active.is_(True))
-          .all()
-    )
-
-    parents: list[dict] = []
-    children_by_parent: dict[str, list[dict]] = defaultdict(list)
-
-    for g in groups:
-        item = {"id": g.id, "name": g.name}
-        if g.parent_id is None:
-            parents.append(item)
-        else:
-            # guarda TODOS os filhos do pai
-            children_by_parent[g.parent_id].append(item)
-
-    # ordenações (opcional)
-    parents.sort(key=lambda x: x["name"].lower())
-    for kids in children_by_parent.values():
-        kids.sort(key=lambda x: x["name"].lower())
-
-    # monta a estrutura final: pai + filhos diretos (sem netos)
-    menu = [
-        {"id": p["id"], "name": p["name"], "children": children_by_parent.get(p["id"], [])}
-        for p in parents
-    ]
-
     # ----------------- REPORTS -----------------
     q = db.query(Report).filter(Report.is_active.is_(True))
     pending_count = 0
@@ -83,7 +56,6 @@ def home(
         "request": request,
         "user": user,
         "reports": rows,
-        "pending_users_count": pending_count,
-        "menu": menu,
+        "pending_users_count": pending_count
     }
     return templates.TemplateResponse("index.html", ctx)

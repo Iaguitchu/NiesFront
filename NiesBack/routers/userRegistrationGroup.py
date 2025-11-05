@@ -11,9 +11,10 @@ from models.models_rbac import User, UserGroup, GroupReportPermission
 from models.models import Report
 from schemas.schemas_rbac import UserGroupCreate, UserGroupOut
 from sqlalchemy import func, distinct
+from core.deps import with_menu
 
 
-router = APIRouter(prefix="/register", tags=["register"])
+router = APIRouter(prefix="/register", tags=["register"], dependencies=[Depends(with_menu)])
 
 @router.get("/user-registration-group", response_class=HTMLResponse, include_in_schema=False)
 def user_registration_group(
