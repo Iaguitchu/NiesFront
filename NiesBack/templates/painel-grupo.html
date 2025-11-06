@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<!-- vendors -->
+<script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+
+<!-- plugins da página (se seu tema usar) -->
+<script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+<script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+<script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+<script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+<script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+
+<!-- scripts principais do template (precisam para o collapse funcionar) -->
+<script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
+<script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+<script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
+<script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
+<script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+
+<!-- seus scripts -->
+<script src="{{ url_for('static', path='assets/js/logout.js') }}"></script>
+
+
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <!-- Breadcrumb -->
+    <div class="page-header">
+      <h3 class="page-title">
+        {% for b in breadcrumb %}
+          {% if not loop.first %} &raquo; {% endif %}
+          <a href="/grupo/{{ b.id }}">{{ b.name }}</a>
+        {% endfor %}
+      </h3>
+    </div>
+
+    <!-- Subgrupos -->
+    {% if subgrupos and subgrupos|length > 0 %}
+    <div class="row">
+      <div class="col-12 mb-3">
+        <h4 class="card-title">Subgrupos</h4>
+      </div>
+      {% for sg in subgrupos %}
+      <div class="col-md-4 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ sg.name }}</h5>
+            <p class="card-text text-muted">Clique para ver os painéis deste subgrupo.</p>
+            <a class="btn btn-outline-primary" href="/grupo/{{ sg.id }}">Ver subgrupo</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Relatórios do grupo -->
+    <div class="row">
+      <div class="col-12 mb-3">
+        <h4 class="card-title">Painéis do grupo: {{ grupo.name }}</h4>
+      </div>
+
+      {% if reports and reports|length > 0 %}
+        {% for r in reports %}
+        <div class="col-md-4 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ r.name }}</h5>
+                {% set thumb = r.thumbnail_url if r.thumbnail_url else url_for('static', path='assets/images/dashboard/1.png') %}
+                {% if r.powerbi_url %}
+                  <a href="{{ r.powerbi_url }}">
+                    <img src="{{ url_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
+                  </a>
+                  {%else%}
+                    <a href="/report/{{ r.id }}">
+                      <img src="{{ url_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
+                    </a>
+                  {% endif %}
+                    <div class="d-flex py-4">
+                      <div class="flex-grow">
+                        <div class="d-flex d-md-block d-xl-flex justify-content-between">
+                          <h6 class="preview-subject">Este Painel Monitora</h6>
+                          <p class="text-muted text-small">+ Detalhes</p>
+                        </div>
+                        <p class="text-muted">
+                          {{ r.title_description or r.description or "Sem descrição" }}
+                        </p>
+                      </div>
+                    </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge badge-{{ 'success' if r.is_public else 'info' }}">
+                  {{ 'Público' if r.is_public else 'Privado' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info">Nenhum painel disponível neste grupo.</div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

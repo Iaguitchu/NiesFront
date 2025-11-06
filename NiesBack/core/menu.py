@@ -10,11 +10,21 @@ def build_menu(db):
     parents, kids = [], defaultdict(list)
     for g in rows:
         item = {"id": g.id, "name": g.name}
-        (parents if g.parent_id is None else kids[g.parent_id]).append(item)
+        if g.parent_id is None:
+            parents.append(item)
+        else:
+            kids[g.parent_id].append(item)
+
 
     parents.sort(key=lambda x: x["name"].lower())
     for v in kids.values():
         v.sort(key=lambda x: x["name"].lower())
 
-    return [{"id": p["id"], "name": p["name"], "children": kids.get(p["id"], [])}
-            for p in parents]
+    resultado = []
+    for p in parents:
+        resultado.append({
+            "id": p["id"],
+            "name": p["name"],
+            "children": kids.get(p["id"], []),  # pega filhos ou [] se não tiver
+        })
+    return resultado

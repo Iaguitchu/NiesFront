@@ -111,17 +111,17 @@
                 <div class="collapse" id="{{ cid }}">
                   <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                      <a class="nav-link" href="/g/{{ g.id }}">{{ g.name }}</a>
+                      <a class="nav-link" href="/grupo/{{ g.id }}">{{ g.name }}</a>
                     </li>
                     {% for c in g.children %}
                       <li class="nav-item">
-                        <a class="nav-link" href="/g/{{ c.id }}">{{ c.name }}</a>
+                        <a class="nav-link" href="/grupo/{{ c.id }}">{{ c.name }}</a>
                       </li>
                     {% endfor %}
                   </ul>
                 </div>
               {% else %}
-                <a class="nav-link" href="/g/{{ g.id }}">
+                <a class="nav-link" href="/grupo/{{ g.id }}">
                   <span class="menu-icon"><i class="mdi mdi-folder"></i></span>
                   <span class="menu-title">{{ g.name }}</span>
                 </a>
@@ -134,9 +134,6 @@
       <div class="container-fluid page-body-wrapper">
         <!-- Parciais -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
-          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{{ url_for('static', path='assets/images/logo-mini.png') }}" alt="logo" /></a>
-          </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
               <span class="mdi mdi-menu"></span>

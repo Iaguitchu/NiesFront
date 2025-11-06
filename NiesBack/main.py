@@ -1,12 +1,18 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+# __________________ Rotas __________________
 from routers.powerbi import router as powerbi_router
 from routers.admin import router as admin
 from routers.auth import router as auth
 from routers.index import router as index
 from routers.reports import router as reports
 from routers.userRegistrationGroup import router as userRegistrationGroup
-from fastapi.staticfiles import StaticFiles
 from routers.reportRegistrationGroup import router as reportRegistrationGroup
+from routers.grupoView import router as grupoView
+
+# ___________________________________________
+
 
 app = FastAPI()
 
@@ -23,6 +29,7 @@ app.include_router(index)
 app.include_router(reports)
 app.include_router(userRegistrationGroup)
 app.include_router(reportRegistrationGroup)
+app.include_router(grupoView)
 
 
 from fastapi.middleware.cors import CORSMiddleware
