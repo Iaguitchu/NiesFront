@@ -10,6 +10,7 @@ from routers.reports import router as reports
 from routers.userRegistrationGroup import router as userRegistrationGroup
 from routers.reportRegistrationGroup import router as reportRegistrationGroup
 from routers.grupoView import router as grupoView
+from routers.userRegister import router as userRegister
 
 # ___________________________________________
 
@@ -30,6 +31,7 @@ app.include_router(reports)
 app.include_router(userRegistrationGroup)
 app.include_router(reportRegistrationGroup)
 app.include_router(grupoView)
+app.include_router(userRegister)
 
 
 from fastapi.middleware.cors import CORSMiddleware

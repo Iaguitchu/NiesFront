@@ -1,4 +1,3 @@
-from collections import defaultdict
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request, HTTPException

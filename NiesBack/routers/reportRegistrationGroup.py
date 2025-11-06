@@ -73,7 +73,6 @@ def report_registration_group(
     return templates.TemplateResponse("cadastro-paineis.html", ctx)
 
 
-
 @router.post("/report-groups", status_code=status.HTTP_201_CREATED)
 def create_report_group(
     payload: ReportGroupCreate,
@@ -86,6 +85,7 @@ def create_report_group(
     has_id = db.query(Group).filter(Group.id == s_id).first()
     if has_id:
         raise HTTPException(status_code=409, detail="Já existe um grupo com este nome.")
+    
 
     grp = Group(
         id=s_id,
@@ -177,7 +177,7 @@ def create_report(payload: ReportOut, db: Session = Depends(get_db)):
     # popula N níveis de acesso
     # payload.access_levels é uma lista de ReportAccessLevelEnum
     for lvl in payload.access_levels:
-        # lvl pode ser Enum ou str; vamos normalizar para o Enum do modelo
+        # lvl pode ser Enum ou str;
         if isinstance(lvl, str):
             lvl_value = lvl
         else:
