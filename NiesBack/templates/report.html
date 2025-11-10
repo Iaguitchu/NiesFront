@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- seu CSS base do tema -->
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/css/style.css') }}">
   
 
  <!-- head -->

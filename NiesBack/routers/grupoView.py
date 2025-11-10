@@ -76,8 +76,8 @@ def group_view(
         "request": request,
         "user": user,
         "grupo": grupo,
-        "subgrupos": subgrupos,   # cards de navegação pros filhos
-        "reports": reports,       # painéis do grupo atual
-        "breadcrumb": breadcrumb, # pai → ... → atual
+        "subgrupos": subgrupos,
+        "reports": reports,
+        "breadcrumb": breadcrumb,
     }
     return templates.TemplateResponse("painel-grupo.html", ctx)

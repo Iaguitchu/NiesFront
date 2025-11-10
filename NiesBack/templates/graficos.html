@@ -49,30 +49,29 @@
 
 
 
-    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
-    <script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
     <!-- End plugin js for this page -->
     <!-- inject:js -->
-    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/todolist.js') }}"></script>
     <!-- endinject -->
     <!-- Custom js for this page -->
-    <script src="{{ url_for('static', path='assets/js/dashboard.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/dashboard.js') }}"></script>
     <!-- End custom js for this page -->
     <!-- Custom js for this page -->
-    <script src="{{ url_for('static', path='assets/js/chart.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/chart.js') }}"></script>
     <!-- End custom js for this page -->
 
-    <!--INICIO JS IA-->
      <!-- biblioteca Power BI -->
   <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"></script>
 
@@ -129,6 +128,3 @@
 
 
  {% endblock %}
-
-
-    <!--FIM JS IA-->

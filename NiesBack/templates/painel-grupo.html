@@ -3,24 +3,24 @@
 
 
 <!-- vendors -->
-<script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
 
 <!-- plugins da página (se seu tema usar) -->
-<script src="{{ url_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
-<script src="{{ url_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
-<script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
-<script src="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-<script src="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
 
 <!-- scripts principais do template (precisam para o collapse funcionar) -->
-<script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
-<script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
-<script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
-<script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
-<script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/off-canvas.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/misc.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/settings.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/todolist.js') }}"></script>
 
 <!-- seus scripts -->
-<script src="{{ url_for('static', path='assets/js/logout.js') }}"></script>
+<script src="{{ request.app.url_path_for('static', path='assets/js/logout.js') }}"></script>
 
 
 <div class="main-panel">
@@ -71,11 +71,11 @@
                 {% set thumb = r.thumbnail_url if r.thumbnail_url else url_for('static', path='assets/images/dashboard/1.png') %}
                 {% if r.powerbi_url %}
                   <a href="{{ r.powerbi_url }}">
-                    <img src="{{ url_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
+                    <img src="{{ request.app.url_path_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
                   </a>
                   {%else%}
                     <a href="/report/{{ r.id }}">
-                      <img src="{{ url_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
+                      <img src="{{ request.app.url_path_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
                     </a>
                   {% endif %}
                     <div class="d-flex py-4">

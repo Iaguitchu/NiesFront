@@ -5,7 +5,8 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
-from models.models import Base  # usa a mesma Base
+from models.models import Base
+import uuid
 
 
 
@@ -18,7 +19,7 @@ class UserStatus(str, enum.Enum):
     blocked = "blocked"
 
 # -----------------------------------------
-# Usuários (INT autoincrement)
+# Usuários
 # -----------------------------------------
 class User(Base):
     __tablename__ = "users"
@@ -45,7 +46,7 @@ class User(Base):
     password_resets: Mapped[list["PasswordReset"]] = relationship("PasswordReset", back_populates="user",cascade="all, delete-orphan",)
 
 # -----------------------------------------
-# Grupos de usuários (para VISUALIZAÇÃO de relatórios) – INT autoincrement
+# Grupos de usuários (para VISUALIZAÇÃO de relatórios)
 # -----------------------------------------
 class UserGroup(Base):
     __tablename__ = "user_groups"
@@ -98,7 +99,7 @@ class Role(Base):
 class Permission(Base):
     __tablename__ = "permissions"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    code: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)  # ex: "users.approve"
+    code: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
     description: Mapped[str | None] = mapped_column(String(200))
 
 class RolePermission(Base):
@@ -121,3 +122,21 @@ class UserRole(Base):
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user: Mapped[User] = relationship(back_populates="roles")
+
+
+
+# -----------------------------------------
+# Reset Senha
+# -----------------------------------------
+class PasswordReset(Base):
+    __tablename__ = "password_resets"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    reset_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, default=lambda: str(uuid.uuid4()))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    token_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    user: Mapped["User"] = relationship(back_populates="password_resets")
+

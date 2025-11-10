@@ -6,10 +6,10 @@
     <title>Cadastre-se - NIES - SES/SP</title>
 
     <!-- plugins:css -->
-    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
     <!-- Layout styles -->
-    <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/css/style.css') }}">
   </head>
   <body>
     <div class="container-scroller">
@@ -88,13 +88,13 @@
     </div>
 
     <!-- plugins:js -->
-    <script src="{{ url_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <!-- inject:js -->
-    <script src="{{ url_for('static', path='assets/js/off-canvas.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/misc.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/settings.js') }}"></script>
-    <script src="{{ url_for('static', path='assets/js/todolist.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/todolist.js') }}"></script>
 
     <!-- Script de cadastro -->
     <script>

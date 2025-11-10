@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str | None = None
     MAIL_USE_TLS: bool = True
     MAIL_USE_SSL: bool = False
-    MAIL_DISABLED: bool = True  # desabilita envio real de emails (apenas loga) – para DEV
+    MAIL_DISABLED: bool = False  # desabilita envio real de emails (apenas loga) – para DEV
 
     # Power BI
     PBI_SCOPE: str = "https://analysis.windows.net/powerbi/api/.default"
@@ -40,8 +40,11 @@ class Settings(BaseSettings):
     SECRET_KEY: str
 
 
+    INVITE_EXPIRES_SECONDS : int =  60 * 60 * 2  # 2h
+    INVITE_SALT : str =  "invite-email-flow"      # personalize
+    PUBLIC_BASE_URL : str = "http://127.0.0.1:8000"
 
-
+    PASSWORD_RESET_EXPIRES_SECONDS: int = 60 * 60 * 2
     # AZURE_REDIRECT_URI: str
 
     

@@ -7,25 +7,25 @@
   <title>NIES - SES/SP</title>
 
   <!-- plugins:css -->
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
   <!-- endinject -->
 
   <!-- Plugin css para essa página -->
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
   <!-- Fim plugin css para essa página -->
 
   <!-- inject:css -->
   <!-- endinject -->
 
   <!-- Layout styles -->
-  <link rel="stylesheet" href="{{ url_for('static', path='assets/css/style.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/css/style.css') }}">
   <!-- Fim layout styles -->
 
-  <link rel="shortcut icon" href="{{ url_for('static', path='assets/images/favicon.png') }}" />
+  <link rel="shortcut icon" href="{{ request.app.url_path_for('static', path='assets/images/favicon.png') }}" />
   
   
   <!-- Google tag (gtag.js) -->
@@ -48,8 +48,8 @@
       <!-- Parciais -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="/"><img src="{{ url_for('static', path='assets/images/logo.png') }}" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="/"><img src="{{ url_for('static', path='assets/images/logo-mini.png') }}" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="/"><img src="{{ request.app.url_path_for('static', path='assets/images/logo.png') }}" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo-mini" href="/"><img src="{{ request.app.url_path_for('static', path='assets/images/logo-mini.png') }}" alt="logo" /></a>
         </div>
         <ul class="nav">
           <li class="nav-item profile">
@@ -289,7 +289,7 @@
        {% block content %}
        
        {% endblock %}
-    <script src="{{ url_for('static', path='assets/js/logout.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/logout.js') }}"></script>
 
 
 

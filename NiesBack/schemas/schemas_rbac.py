@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date
-from typing import List, Optional
+from typing import List, Optional,Literal
 from models.models_rbac import UserStatus
 
 class UserCreate(BaseModel):
@@ -8,9 +8,10 @@ class UserCreate(BaseModel):
     cpf: str
     email: EmailStr
     phone: Optional[str] = None
+    status: Literal["approved", "pending"] = "pending"
     valid_from: Optional[date] = None
     valid_to: Optional[date] = None
-    password: str = Field(min_length=6)
+    group_ids: List[str] = Field(default_factory=list)
 
 class UserOut(BaseModel):
     id: int

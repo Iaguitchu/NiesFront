@@ -1,13 +1,22 @@
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
-from core.settings import SECRET, SALT_EMAIL_VERIFY
-
-EXPIRES_SECONDS = 3600 * 24  # 24h
+from .settings import settings
 
 def _serializer() -> URLSafeTimedSerializer:
-    return URLSafeTimedSerializer(secret_key=SECRET, salt=SALT_EMAIL_VERIFY)
+    # settings.SECRET_KEY e settings.INVITE_SALT precisam existir
+    return URLSafeTimedSerializer(secret_key=settings.SECRET_KEY, salt=settings.INVITE_SALT)
 
-def make_email_token(user_id: str) -> str:
-    return _serializer().dumps({"uid": user_id})
+def make_invite_token(payload: dict) -> str:
+    # payload: { "email": ..., "name": ..., "cpf": ..., "phone": ..., "valid_from": "YYYY-MM-DD"|None, "valid_to": "YYYY-MM-DD"|None, "group_ids": [...] }
+    return _serializer().dumps(payload)
 
-def read_email_token(token: str) -> dict:
-    return _serializer().loads(token, max_age=EXPIRES_SECONDS)
+# Verifica expiração usando max_age (em segundos). Se passou, levanta SignatureExpired.
+def read_invite_token(token: str, max_age_seconds: int) -> dict:
+    s = _serializer()
+    try:
+        return s.loads(token, max_age=max_age_seconds)
+    except SignatureExpired as e:
+        # expirou
+        raise
+    except BadSignature as e:
+        # token inválido
+        raise
