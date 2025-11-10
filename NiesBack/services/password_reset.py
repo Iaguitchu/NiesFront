@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import secrets
 from sqlalchemy.orm import Session
 from sqlalchemy import select

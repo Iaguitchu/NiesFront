@@ -59,7 +59,7 @@ async def post_user_registration(
         "email": user_in.email.strip().lower(),
         "phone": (user_in.phone or "").strip() or None,
         "status": user_in.status,  # "approved" | "pending"
-        "valid_from": user_in.valid_from.isoformat() if user_in.valid_from else None,
+        "valid_from": user_in.valid_from.isoformat() if user_in.valid_from else None, #isoformat transforma data em (YYYY-MM-DD)
         "valid_to": user_in.valid_to.isoformat() if user_in.valid_to else None,
         "group_ids": user_in.group_ids or [],
     }
@@ -85,8 +85,14 @@ async def post_user_registration(
 
     send_email(to=user_in.email, subject=subject, body_text=text, body_html=html)
 
-    return JSONResponse({"""ok": True, "message": f"Convite enviado para {user_in.email}.\n
-                         Verifique a caixa de SPAM"""}, status_code=200)
+    return JSONResponse(
+    {
+        "ok": True,
+        "message": f"Convite enviado para {user_in.email}.\nVerifique a caixa de SPAM"
+    },
+    status_code=200,
+)
+
 
 @router.get("/confirm", response_class=HTMLResponse)
 def confirm_invite(request: Request, token: str, db: Session = Depends(get_db)):
@@ -134,7 +140,7 @@ def confirm_invite(request: Request, token: str, db: Session = Depends(get_db)):
             valid_to=vto,
             status=UserStatus.approved if status_str == "approved" else UserStatus.pending,
             is_admin=False,
-            password_hash="",  # você vai forçar setar senha no primeiro acesso (recomendado)
+            password_hash="",  #forçar setar a senha no primeiro acesso.
         )
         db.add(user_obj)
         db.flush()  # para ter user_obj.id
@@ -163,4 +169,3 @@ def confirm_invite(request: Request, token: str, db: Session = Depends(get_db)):
     },
     status_code=200,
 )
-

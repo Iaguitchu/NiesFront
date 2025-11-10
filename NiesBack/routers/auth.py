@@ -56,14 +56,14 @@ def login_page(request: Request):
 @router.post("/login", response_model=TokenOut)
 def login(data: LoginIn, response: Response, db: Session = Depends(get_db)):
     invalid_err = HTTPException(401, "E-mail ou senha inválidos.")
-
     u = db.query(User).filter(User.email == _normalize_email(data.email)).first()
+    if u:
+    # Se não tem senha definida ainda (ex.: acabou de confirmar convite)
+        if u.password_hash == "" :
+            raise HTTPException(status_code=403, detail="Defina sua senha pelo link enviado por e-mail.")
+
     if not u or not verify_password(data.password, u.password_hash):
         raise invalid_err
-
-    # Se não tem senha definida ainda (ex.: acabou de confirmar convite)
-    if not u.password_hash:
-        raise HTTPException(status_code=403, detail="Defina sua senha pelo link enviado por e-mail.")
 
     today = date.today()
 
