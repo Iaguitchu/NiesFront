@@ -1,4 +1,4 @@
-from sqlalchemy import or_, select
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
@@ -40,62 +40,13 @@ def group_view(
         raise HTTPException(status_code=404, detail="Grupo não encontrado")
 
     # --- subgrupos (somente 1º nível) ---
-    if user and getattr(user, "is_admin", False):
-        # Admin vê todos os subgrupos
-        subgrupos = (
-            db.query(Group)
-            .filter(Group.parent_id == grupo_id, Group.is_active.is_(True))
-            .order_by(Group.name.asc())
-            .all()
-        )
-    elif user:
-        # Subquery com reports acessíveis ao usuário (públicos OU pelos grupos do usuário)
-        allowed_reports_subq = (
-            db.query(Report.group_id)
-            .filter(Report.is_active.is_(True))
-            .filter(
-                or_(
-                    Report.is_public.is_(True),
-                    Report.id.in_(
-                        db.query(GroupReportPermission.report_id)
-                            .join(UserGroupMember, UserGroupMember.group_id == GroupReportPermission.group_id)
-                            .filter(UserGroupMember.user_id == user.id)
-                    ),
-                )
-            )
-            .distinct()
-            .subquery()
-        )
+    subgrupos = (
+        db.query(Group)
+          .filter(Group.parent_id == grupo_id, Group.is_active.is_(True))
+          .order_by(Group.name.asc())
+          .all()
+    )
 
-        subgrupos = (
-            db.query(Group)
-            .filter(
-                Group.parent_id == grupo_id,
-                Group.is_active.is_(True),
-                Group.id.in_(select(allowed_reports_subq.c.group_id)),
-            )
-            .order_by(Group.name.asc())
-            .all()
-        )
-    else:
-        # Visitante (não logado): só subgrupos que tenham ao menos 1 report público ativo
-        public_groups_subq = (
-            db.query(Report.group_id)
-            .filter(Report.is_active.is_(True), Report.is_public.is_(True))
-            .distinct()
-            .subquery()
-        )
-
-        subgrupos = (
-            db.query(Group)
-            .filter(
-                Group.parent_id == grupo_id,
-                Group.is_active.is_(True),
-                Group.id.in_(select(public_groups_subq.c.group_id)),
-            )
-            .order_by(Group.name.asc())
-            .all()
-        )
     # --- relatórios do grupo (permissão) ---
     q = db.query(Report).filter(Report.is_active.is_(True), Report.group_id == grupo_id)
 

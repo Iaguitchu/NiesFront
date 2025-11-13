@@ -1,11 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
+
+<style>
+   .report-fullscreen {
+  position: fixed !important;
+  inset: 0;                /* top/right/bottom/left = 0 */
+  z-index: 2000;
+  border-radius: 0;
+  margin: 0;
+}
+
+/* garante que o container do relatório ocupe a tela toda
+   quando o card estiver fullscreen (se quiser deixar global) */
+.report-fullscreen #reportContainer {
+  height: 100vh !important;
+}
+</style>
       <div class="container-fluid page-body-wrapper">        
         <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
             <div class="page-header">
-              <h3 class="page-title"> Detalhes do Gráfico </h3>
+              <h3 class="page-title"> Detalhes do Gráfico  {{name}}</h3>
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="/">Inicio</a></li>
@@ -13,10 +29,19 @@
               </nav>
             </div>
 
-          <div class="card position-relative">
+          <div class="card position-relative" style="background-color: white;" id="reportCard">
             <div class="card-body p-0">
-              <!-- toolbar de zoom -->
-             <div id="zoomToolbar" style="position:absolute; bottom:10px; right:14px; z-index:10;
+
+            <!-- botão de tela cheia -->
+            <button id="fullscreenBtn"
+                    class="btn btn-sm btn-dark"
+                    style="position:absolute; top:10px; right:14px; z-index:11; padding:0 8px;"
+                    title="Tela cheia">
+              <i class="mdi mdi-arrow-expand"></i>
+            </button>
+
+            <!-- toolbar de zoom -->
+            <div id="zoomToolbar" style="position:absolute; bottom:10px; right:14px; z-index:10;
               display:flex; align-items:center; gap:8px; background:#1f2430;
               border:1px solid #2b2f36; border-radius:20px; padding:2px 10px; color:#e9eef5;">
               <button id="zMinus" class="btn btn-sm btn-dark" style="padding:0 8px;">−</button>
@@ -25,11 +50,12 @@
               <span id="zLabel">100%</span>
               <button id="zReset" class="btn btn-sm btn-secondary" style="padding:0 8px;">⟲</button>
             </div>
+
             <!-- 👉 Aqui o Power BI vai renderizar -->
             <div id="reportContainer" style="width:100%; height:calc(100vh - 220px);"></div>
-            </div>
           </div>
         </div>
+
 
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->
@@ -79,9 +105,47 @@
 <script>
 (async () => {
   const reportId = "{{ report.id }}";
+  
   const resp = await fetch(`/api/powerbi/embed-info?reportId=${encodeURIComponent(reportId)}`);
   if (!resp.ok) { alert("Falha ao obter embed-info"); return; }
   const info = await resp.json();
+
+  if (info.externalUrl) {
+    document.getElementById("reportContainer").innerHTML = `
+        <iframe 
+            src="${info.externalUrl}"
+            style="border:0; width:100%; height:100%;"
+            allowfullscreen
+        ></iframe>
+    `;
+    document.getElementById("zoomToolbar").style.display = "none";
+    document.getElementById("fullscreenBtn").style.display = "none"
+    return;
+}
+
+// botao tela cheia 
+  const cardEl = document.getElementById("reportCard");
+  const containerEl = document.getElementById("reportContainer");
+  const fsBtn = document.getElementById("fullscreenBtn");
+  const originalHeight = containerEl.style.height;
+  let isFullscreen = false;
+
+  fsBtn.addEventListener("click", () => {
+    isFullscreen = !isFullscreen;
+
+    if (isFullscreen) {
+      cardEl.classList.add("report-fullscreen");
+      containerEl.style.height = "100vh";
+      fsBtn.innerHTML = '<i class="mdi mdi-arrow-collapse"></i>';
+      fsBtn.title = "Sair da tela cheia";
+    } else {
+      cardEl.classList.remove("report-fullscreen");
+      containerEl.style.height = originalHeight;
+      fsBtn.innerHTML = '<i class="mdi mdi-arrow-expand"></i>';
+      fsBtn.title = "Tela cheia";
+    }
+  });
+// fim do botao
 
   const models = window['powerbi-client'].models;
   const cfg = {
@@ -117,8 +181,8 @@
   }
 
   zRange.addEventListener("input", () => applyZoom(Number(zRange.value)));
-  zMinus.addEventListener("click", () => applyZoom(Number(zRange.value) - 10));
-  zPlus .addEventListener("click", () => applyZoom(Number(zRange.value) + 10));
+  zMinus.addEventListener("click", () => applyZoom(Number(zRange.value) - 5));
+  zPlus .addEventListener("click", () => applyZoom(Number(zRange.value) + 5));
   zReset.addEventListener("click", () => applyZoom(100));
 
   // opcional: ajusta zoom após o primeiro render

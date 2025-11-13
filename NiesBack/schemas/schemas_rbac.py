@@ -8,6 +8,7 @@ class UserCreate(BaseModel):
     cpf: str
     email: EmailStr
     phone: Optional[str] = None
+    password: Optional[str] = None
     status: Literal["approved", "pending"] = "pending"
     valid_from: Optional[date] = None
     valid_to: Optional[date] = None

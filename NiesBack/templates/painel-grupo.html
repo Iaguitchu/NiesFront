@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  /* Container da thumb: define o "retângulo padrão" da imagem */
+.report-thumb-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;  /* todos os thumbs 16:9 */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Imagem preenche o container sem distorcer */
+.report-thumb {
+  width: 100%;
+  
+  max-height: 100%;
+  object-fit: cover;      /* corta o que sobra, mas não deforma */
+  display: block;
+}
+
+</style>
 
 
 <!-- vendors -->
@@ -64,39 +83,34 @@
 
       {% if reports and reports|length > 0 %}
         {% for r in reports %}
-        <div class="col-md-4 grid-margin stretch-card">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">{{ r.name }}</h5>
-                {% set thumb = r.thumbnail_url if r.thumbnail_url else url_for('static', path='assets/images/dashboard/1.png') %}
-                {% if r.powerbi_url %}
-                  <a href="{{ r.powerbi_url }}">
-                    <img src="{{ request.app.url_path_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
-                  </a>
-                  {%else%}
-                    <a href="/report/{{ r.id }}">
-                      <img src="{{ request.app.url_path_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
-                    </a>
-                  {% endif %}
-                    <div class="d-flex py-4">
-                      <div class="flex-grow">
-                        <div class="d-flex d-md-block d-xl-flex justify-content-between">
-                          <h6 class="preview-subject">Este Painel Monitora</h6>
-                          <p class="text-muted text-small">+ Detalhes</p>
+                  <div class="col-md-6 col-xl-4 grid-margin stretch-card">
+                    <div class="card h-100">
+                      <div class="card-body">
+                      <h4 class="card-title">{{ r.name }}</h4>
+                      <!-- se tiver thumbnail_url absoluto usa ele; senão usa fallback local -->
+                    {% set thumb = r.image_url if r.image_url else request.app.url_path_for('static', path='assets/images/dashboard/1.png') %}
+                      <a href="/report/{{ r.id }}">
+                        <div class="report-thumb-wrapper">
+                          <img src="{{ thumb }}" alt="{{ r.name }}" class="report-thumb">
                         </div>
-                        <p class="text-muted">
-                          {{ r.title_description or r.description or "Sem descrição" }}
-                        </p>
+                      </a>
+                      <div class="d-flex py-4">
+                        <div class="flex-grow">
+                          <div class="d-flex d-md-block d-xl-flex justify-content-between">
+                            <h6 class="preview-subject">Este Painel Monitora</h6>
+                             {% set privacy_class = 'text-success' if r.is_public else 'text-warning' %}
+                              <p class="text-small {{ privacy_class }}">
+                              {{ 'Público' if r.is_public else 'Privado' }}
+                              </p>
+                          </div>
+                          <p class="text-muted">
+                            {{ r.title_description or r.description or "Sem descrição" }}
+                          </p>
+                        </div>
                       </div>
                     </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="badge badge-{{ 'success' if r.is_public else 'info' }}">
-                  {{ 'Público' if r.is_public else 'Privado' }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </div>
+                </div>
         {% endfor %}
       {% else %}
         <div class="col-12">

@@ -25,6 +25,7 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{{ request.app.url_path_for('static', path='assets/images/favicon.png') }}" />
   </head>
+
     <div class="container-scroller">
       <!-- partial:partials/_sidebar.html -->
         <!-- partial -->
@@ -51,13 +52,6 @@
                         <label for="inputGrupoNome">Nome do Grupo</label>
                         <input type="text" class="form-control" id="inputGrupoNome" placeholder="Nome do Grupo">
                       </div>
-                      <!-- <div class="form-group">
-                        <label>Tipo de Acesso</label>
-                      <select  id="selectTipoAcesso" class="js-example-basic-single" style="width:100%">
-                        <option value="Público">Público</option>
-                        <option value="Privado">Privado</option>
-                      </select>
-                      </div> -->
                       <div class="form-group">
                         <label for="inputGrupoDesc">Descrição do Grupo</label>
                         <textarea class="form-control" id="inputGrupoDesc" rows="2"></textarea>
@@ -95,13 +89,6 @@
                             {% endfor %}
                           </select>
                       </div>
-                      <!-- <div class="form-group">
-                        <label>Tipo de Acesso</label>
-                      <select id="selectSubTipoAcesso" class="js-example-basic-single" style="width:100%">
-                        <option value="Público">Público</option>
-                        <option value="Privado">Privado</option>
-                      </select>
-                      </div> -->
                       <div class="form-group">
                         <label for="inputSubgrupoDesc">Descrição do Subgrupo</label>
                         <textarea class="form-control" id="inputSubgrupoDesc" rows="2"></textarea>
@@ -231,15 +218,15 @@
         <br />
         <div class="form-group">
           <label>Tipo de Acesso</label>
-          <select class="js-example-basic-single" style="width:100%">
-            <option value="Público">Público</option>
-            <option value="Privado">Privado</option>
+          <select id="selectPrivado" class="js-example-basic-single" style="width:100%">
+            <option value="true">Público</option>
+            <option value="false">Privado</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Imagem do Painel</label>
-          <input type="file" name="img[]" class="file-upload-default">
+          <input type="file" id="inputImagemPainel" accept="image/*" class="file-upload-default">
           <div class="input-group col-xs-12">
             <input type="text" class="form-control file-upload-info" disabled placeholder="Selecione uma Imagem">
             <span class="input-group-append">
@@ -247,6 +234,7 @@
             </span>
           </div>
         </div>
+
 
         <div class="form-group">
           <label for="exampleTextarea1">Descrição do Painel</label>
@@ -287,9 +275,14 @@
                                 <td>{{ row.r.name }}</td>
                                 <td>{{ row.group_path }}</td>
                                 <td>{{ 'Público' if row.r.is_public else 'Privado' }}</td>
-                                <td><button type="button" class="btn btn-outline-secondary btn-icon-text"> Editar <i class="mdi mdi-file-check btn-icon-append"></i></button></td>
+                                <td>
+                                  <a href="/edit-report/{{ row.r.id }}"
+                                    class="btn btn-outline-secondary btn-icon-text">
+                                    Editar <i class="mdi mdi-file-check btn-icon-append"></i>
+                                  </a>
+                                </td>
                                 <td><button type="button" class="btn btn-outline-danger btn-icon-text"><i class="mdi mdi-file-excel-box btn-icon-prepend"></i> Desativar </button></td>
-                                <td><a href="detalhes_painel.html"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
+                                <td><a href="/details/panel-detail"><button type="button" class="btn btn-social-icon btn-facebook"><i class="mdi mdi-television-guide"></i></button></a></td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -350,6 +343,21 @@
   const API_BASE = window.location.origin + "/";
 </script>
 <script>
+
+  async function uploadImagem(file) {
+    const fd = new FormData();
+    fd.append("file", file);
+    const resp = await fetch(`${API_BASE}upload/image`, {
+      method: "POST",
+      body: fd,
+      credentials: "include",
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || "Falha ao enviar imagem");
+    }
+    return resp.json(); // { key, url }
+  }
 document.addEventListener("DOMContentLoaded", () => {
   
 
@@ -430,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // TODO: pegue o group_id e subgrupo_id reais dos seus selects (aqui estão hardcoded no HTML)
       // Exemplo: <select id="selectGroupPrincipal"> e <select id="selectSubgrupo">
       const group_id = document.querySelector("#selectGrupo")?.value.trim();
-      const is_public = true; // ou pegue do select "Tipo de Acesso"
+      const is_public = document.querySelector("#selectPrivado")?.value.trim();
 
       // Access levels (pegando pelos labels marcados)
       const access_levels = [];
@@ -445,47 +453,58 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       // Monta o payload simples (sem discriminator)
-      const payload = {
-        name,
-        group_id,
-        description: descricao || null,
-        is_public,
-        access_levels,
-        powerbi_url: null,
-        workspace_id: null,
-        report_id: null,
-      };
+       // NEW ⬇ faz upload da imagem (se houver)
+        let image_url = null;
+        const fileInput = document.querySelector("#inputImagemPainel");
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+          try {
+            const up = await uploadImagem(fileInput.files[0]);
+            image_url = up.url; // ex.: /media/<uuid>.jpg
+          } catch (err) {
+            alert(err.message);
+            return;
+          }
+        }
 
-      if (modo === "url") {
-        payload.powerbi_url = powerbi_url || null;
-      } else {
-        payload.workspace_id = workspace_id || null;
-        payload.report_id = report_id || null;
-      }
+        const payload = {
+          name,
+          group_id,
+          description: descricao || null,
+          is_public,
+          access_levels,
+          powerbi_url: null,
+          workspace_id: null,
+          report_id: null,
+          image_url, // NEW ⬅
+        };
 
-      // Validação mínima no front (opcional)
-      if (modo === "url" && !payload.powerbi_url) {
-        return alert("Informe a URL do Power BI.");
-      }
-      if (modo === "ids" && (!payload.workspace_id || !payload.report_id)) {
-        return alert("Informe Workspace ID e Report ID.");
-      }
-      if (!payload.name) return alert("Informe o nome do painel.");
+        if (modo === "url") {
+          payload.powerbi_url = powerbi_url || null;
+        } else {
+          payload.workspace_id = workspace_id || null;
+          payload.report_id = report_id || null;
+        }
 
-      const resp = await fetch(`${API_BASE}register/reports`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
+        if (modo === "url" && !payload.powerbi_url)
+          return alert("Informe a URL do Power BI.");
+        if (modo === "ids" && (!payload.workspace_id || !payload.report_id))
+          return alert("Informe Workspace ID e Report ID.");
+        if (!payload.name) return alert("Informe o nome do painel.");
+
+        const resp = await fetch(`${API_BASE}register/reports`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) return alert(data.detail || "Erro ao cadastrar painel.");
+        alert(data.message || "Painel cadastrado!");
+        location.reload();
       });
-
-      const data = await resp.json().catch(() => ({}));
-      if (!resp.ok) return alert(data.detail || "Erro ao cadastrar painel.");
-      alert(data.message || "Painel cadastrado!");
-      location.reload();
-    });
-  }
-});
+    }
+  });
 </script>
 
 

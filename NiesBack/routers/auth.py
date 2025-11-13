@@ -28,6 +28,8 @@ def register_page(request: Request):
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
     email = _normalize_email(user_in.email)
     if db.query(User).filter(User.email == email).first():
+        teste = db.query(User).filter(User.email == email).first()
+        print(teste)
         raise HTTPException(400, "Email already registered")
     if db.query(User).filter(User.cpf == user_in.cpf).first():
         raise HTTPException(400, "CPF already registered")
@@ -198,56 +200,6 @@ def logout(response: Response):
 # @router.post("/reset-password/")
 # def reset_password(data: ResetPasswordIn, db: Session = Depends(get_db)):
 #    return send_reset_code(_normalize_email(data.email), db)
-@router.get("/set-password", response_class=HTMLResponse)
-def set_password_form(request: Request, rid: str, token: str, db: Session = Depends(get_db)):
-    pr = get_valid_password_reset(db, rid, token)
-    if not pr:
-        raise HTTPException(status_code=400, detail="Link inválido ou expirado.")
-    return templates.TemplateResponse(
-        "set_password.html",
-        {"request": request, "rid": rid, "token": token},
-        status_code=200
-    )
-
-@router.post("/set-password")
-def set_password_submit(
-    request: Request,
-    rid: str = Form(...),
-    token: str = Form(...),
-    password: str = Form(...),
-    password_confirm: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    pr = get_valid_password_reset(db, rid, token)
-    if not pr:
-        raise HTTPException(status_code=400, detail="Link inválido ou expirado.")
-
-    # Validações de força/igualdade
-    if password != password_confirm:
-        raise HTTPException(status_code=400, detail="As senhas não coincidem.")
-    if len(password) < 8:
-        raise HTTPException(status_code=400, detail="A senha deve ter pelo menos 8 caracteres.")
-    # (Opcional) impor números/letras/maiúsculas/especiais
-
-    user = db.get(User, pr.user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
-
-    user.password_hash = hash_password(password)
-    db.add(user)
-    db.commit()
-
-    mark_used(db, pr)
-
-    # Redireciona para login
-    return templates.TemplateResponse(
-        "mensagem.html",
-        {"request": request, "title": "Senha definida", "message": "Senha definida com sucesso. Você já pode fazer login."},
-        status_code=http_status.HTTP_200_OK
-    )
-
-
-
 @router.get("/set-password", response_class=HTMLResponse)
 def set_password_form(request: Request, rid: str, token: str, db: Session = Depends(get_db)):
     pr = get_valid_password_reset(db, rid, token)

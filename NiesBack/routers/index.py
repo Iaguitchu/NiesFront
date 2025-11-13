@@ -1,11 +1,10 @@
-from collections import defaultdict
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 
 from db import get_db
-from models.models import Group, Report
+from models.models import Report
 from models.models_rbac import User, UserGroupMember, GroupReportPermission
 from services.security import get_current_user_optional
 from core.templates import templates

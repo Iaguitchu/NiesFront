@@ -12,6 +12,7 @@ from schemas.schemas import ReportOut, ReportAccessLevelEnum
 import re
 import unicodedata
 from core.deps import with_menu
+from routers.media_uploads import MEDIA_DIR, MEDIA_URL
 
 router = APIRouter(prefix="/register", tags=["register"], dependencies=[Depends(with_menu)])
 
@@ -196,6 +197,105 @@ def create_report(payload: ReportOut, db: Session = Depends(get_db)):
         ReportAccessLevelEnum(ra.level.value)  # model Enum -> schema Enum
         for ra in report.access_levels
     ]
+
+    return ReportOut(
+        id=report.id,
+        name=report.name,
+        title_description=report.title_description,
+        description=report.description,
+        image_url=report.image_url,
+        powerbi_url=report.powerbi_url,
+        workspace_id=report.workspace_id,
+        report_id=report.report_id,
+        group_id=report.group_id,
+        is_public=report.is_public,
+        access_levels=out_levels,
+    )
+
+
+@router.put("/reports/{report_id}", response_model=ReportOut)
+def update_report(
+    report_id: str,
+    payload: ReportOut,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_admin),
+):
+    report = db.query(Report).filter(Report.id == report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Painel não encontrado.")
+    
+
+    has_url = bool(payload.powerbi_url)
+    has_ids = bool(payload.workspace_id and payload.report_id)
+
+    # Se mandou URL e IDs juntos → erro
+    if has_url and has_ids:
+        raise HTTPException(
+            status_code=400,
+            detail="Não envie powerbi_url junto com workspace_id/report_id. Escolha apenas um modo."
+        )
+
+    # Se não mandou nem URL nem IDs → erro
+    if not has_url and not has_ids:
+        raise HTTPException(
+            status_code=400,
+            detail="Envie OU powerbi_url OU (workspace_id e report_id)."
+    )
+
+    old_image_url = report.image_url
+
+    report.name = payload.name
+    report.group_id = payload.group_id
+    report.description = payload.description
+    report.image_url = payload.image_url
+    report.is_public = payload.is_public
+
+    if has_url:
+        report.powerbi_url = payload.powerbi_url
+        report.workspace_id = None
+        report.report_id = None
+    else:
+        report.workspace_id = payload.workspace_id
+        report.report_id = payload.report_id
+        report.powerbi_url = None
+
+    # limpa níveis antigos
+    db.query(ReportAccessLevel).filter(
+        ReportAccessLevel.report_id == report.id
+    ).delete()
+
+    # recria níveis conforme o payload
+    for lvl in payload.access_levels:
+        if isinstance(lvl, str):
+            lvl_value = lvl
+        else:
+            lvl_value = lvl.value
+
+        db.add(ReportAccessLevel(
+            report_id=report.id,
+            level=AccessLevel(lvl_value),
+        ))
+
+    db.commit()
+    db.refresh(report)
+
+    out_levels = [
+        ReportAccessLevelEnum(ra.level.value)
+        for ra in report.access_levels
+    ]
+
+    if old_image_url and old_image_url != report.image_url:
+        try:
+            # old_image_url vem tipo "/media/abcd1234.jpg"
+            prefix = MEDIA_URL.rstrip("/") + "/"
+            if old_image_url.startswith(prefix):
+                filename = old_image_url[len(prefix):]  # "abcd1234.jpg"
+                old_path = MEDIA_DIR / filename
+                if old_path.is_file():
+                    old_path.unlink()
+        except Exception as e:
+            # aqui pode só logar, pra não quebrar a requisição
+            print(f"Falha ao remover imagem antiga {old_image_url}: {e}")
 
     return ReportOut(
         id=report.id,

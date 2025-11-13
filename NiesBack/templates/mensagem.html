@@ -1,28 +1,60 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8" />
-  <title>{{ title or "Mensagem" }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; margin:0; background:#f6f7fb; }
-    .wrap { max-width: 720px; margin: 48px auto; background:#fff; padding:24px; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,.06); }
-    h1 { font-size: 20px; margin:0 0 12px; }
-    p { margin: 6px 0; line-height: 1.6; color:#333 }
-    .btn { display:inline-block; padding:10px 16px; border-radius:8px; text-decoration:none; border:1px solid #e2e8f0; }
-    .btn-primary { border-color:#2563eb; background:#2563eb; color:#fff; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>{{ title or "Mensagem" }}</h1>
-    {# Se "message" tiver HTML (ex: link), use |safe #}
-    <p>{{ message|safe }}</p>
-    <a href="/"> Aqui</a>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <!-- Meta tags Obrigatórias-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>NIES - SES/SP</title>
 
-    {% if action_url %}
-      <p><a class="btn btn-primary" href="{{ action_url }}">{{ action_label or "Continuar" }}</a></p>
-    {% endif %}
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+  <!-- endinject -->
+
+  <!-- Plugin css para essa página -->
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+  <!-- Fim plugin css para essa página -->
+
+  <!-- inject:css -->
+  <!-- endinject -->
+
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/css/style.css') }}">
+  <!-- Fim layout styles -->
+
+  <link rel="shortcut icon" href="{{ request.app.url_path_for('static', path='assets/images/favicon.png') }}" />
+
+<div class="main-panel">
+  <div class="content-wrapper d-flex align-items-center justify-content-center">
+    <div class="row w-100">
+      <div class="col-md-8 mx-auto grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body text-center">
+            <h3 class="card-title mb-3">
+              {{ title or "Mensagem" }}
+            </h3>
+
+            <p class="mb-4">
+              {{ message|safe }}
+            </p>
+
+            {% if action_url %}
+              <a class="btn btn-primary mr-2" href="{{ action_url }}">
+                {{ action_label or "Continuar" }}
+              </a>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</body>
+</div>
+
+
+
+  </body>
 </html>

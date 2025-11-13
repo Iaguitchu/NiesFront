@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  /* Container da thumb: define o "retângulo padrão" da imagem */
+.report-thumb-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;  /* todos os thumbs 16:9 */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* Imagem preenche o container sem distorcer */
+.report-thumb {
+  width: 100%;
+  
+  max-height: 100%;
+  object-fit: cover;      /* corta o que sobra, mas não deforma */
+  display: block;
+}
+
+</style>
+
         <!-- Parciais -->
         <div class="main-panel">
           <div class="content-wrapper">
@@ -31,7 +51,6 @@
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
@@ -117,22 +136,25 @@
             <div class="row">
               {% if reports and reports|length %}
                 {% for r in reports %}
-                <div class="col-md-6 col-xl-4 grid-margin stretch-card">
-                  <div class="card">
-                    <div class="card-body">
+                  <div class="col-md-6 col-xl-4 grid-margin stretch-card">
+                    <div class="card h-100">
+                      <div class="card-body">
                       <h4 class="card-title">{{ r.name }}</h4>
-
                       <!-- se tiver thumbnail_url absoluto usa ele; senão usa fallback local -->
-                      {% set thumb = r.thumbnail_url if r.thumbnail_url else url_for('static', path='assets/images/dashboard/1.png') %}
+                    {% set thumb = r.image_url if r.image_url else request.app.url_path_for('static', path='assets/images/dashboard/1.png') %}
                       <a href="/report/{{ r.id }}">
-                        <img src="{{ request.app.url_path_for('static', path='assets/images/dashboard/1.png') }}" alt="{{ r.name }}">
+                        <div class="report-thumb-wrapper">
+                          <img src="{{ thumb }}" alt="{{ r.name }}" class="report-thumb">
+                        </div>
                       </a>
-
                       <div class="d-flex py-4">
                         <div class="flex-grow">
                           <div class="d-flex d-md-block d-xl-flex justify-content-between">
                             <h6 class="preview-subject">Este Painel Monitora</h6>
-                            <p class="text-muted text-small">+ Detalhes</p>
+                             {% set privacy_class = 'text-success' if r.is_public else 'text-warning' %}
+                              <p class="text-small {{ privacy_class }}">
+                              {{ 'Público' if r.is_public else 'Privado' }}
+                              </p>
                           </div>
                           <p class="text-muted">
                             {{ r.title_description or r.description or "Sem descrição" }}

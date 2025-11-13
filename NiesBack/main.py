@@ -14,6 +14,9 @@ from routers.userRegistrationGroup import router as userRegistrationGroup
 from routers.reportRegistrationGroup import router as reportRegistrationGroup
 from routers.grupoView import router as grupoView
 from routers.userRegister import router as userRegister
+from routers.panelDetail import router as panelDetail
+from routers.editPanel import router as editPanel
+from routers.media_uploads import router as media_router, mount_media
  
 # ___________________________________________
  
@@ -22,7 +25,9 @@ app = FastAPI()
  
 # static em /static
 app.mount("/static", StaticFiles(directory="static"), name="static")
- 
+
+#monta /media a partir do NFS (/data/media)
+mount_media(app) 
  
 @app.middleware("http")
 async def csp_upgrade(request: Request, call_next):
@@ -42,6 +47,9 @@ app.include_router(userRegistrationGroup)
 app.include_router(reportRegistrationGroup)
 app.include_router(grupoView)
 app.include_router(userRegister)
+app.include_router(panelDetail)
+app.include_router(media_router)
+app.include_router(editPanel)
  
  
 from fastapi.middleware.cors import CORSMiddleware

@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block content %}
+ <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>NIES - SES/SP</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/css/vendor.bundle.base.css') }}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
+     <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css') }}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ request.app.url_path_for('static', path='assets/css/style.css') }}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{{ request.app.url_path_for('static', path='assets/images/favicon.png') }}" />
+  </head>
+<div class="container-scroller">
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h3 class="page-title">Editar Painel: {{ report.name }} </h3>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/register/report-registration-group">Cadastro de Paineis</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Painel</li>
+          </ol>
+        </nav>
+      </div>
+
+      <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Editar Painel (Relatório)</h4>
+
+              <form class="forms-sample" id="formEditarPainel">
+
+                <input type="hidden" id="reportId" value="{{ report.id }}">
+                <input type="hidden" id="currentImageUrl" value="{{ report.image_url or '' }}">
+
+                <div class="form-group">
+                  <label for="editNome">Nome do Painel</label>
+                  <input type="text" class="form-control" id="editNome"
+                         value="{{ report.name }}" placeholder="Nome do Painel">
+                </div>
+
+                <!-- modo Power BI -->
+                <div class="form-group">
+                  <label>Origem do Painel (Power BI)</label>
+                  <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" name="modoPowerBI" class="form-check-input"
+                             value="ids"
+                             {% if report.workspace_id and report.report_id %}checked{% endif %}>
+                      Workspace + Report IDs
+                    </label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" name="modoPowerBI" class="form-check-input"
+                             value="url"
+                             {% if report.powerbi_url %}checked{% endif %}>
+                      URL direta
+                    </label>
+                  </div>
+                </div>
+
+                <div class="modo-ids" {% if not (report.workspace_id and report.report_id) %}style="display:none"{% endif %}>
+                  <div class="form-group painel-relatorio">
+                    <label for="editWorkspace">Workspace ID - Power BI</label>
+                    <input type="text" class="form-control" id="editWorkspace"
+                           value="{{ report.workspace_id or '' }}">
+                  </div>
+
+                  <div class="form-group painel-relatorio">
+                    <label for="editReport">Report ID - Power BI</label>
+                    <input type="text" class="form-control" id="editReport"
+                           value="{{ report.report_id or '' }}">
+                  </div>
+                </div>
+
+                <div class="modo-url" {% if not report.powerbi_url %}style="display:none"{% endif %}>
+                  <div class="form-group painel-relatorio">
+                    <label for="editUrlPower">URL - Power BI</label>
+                    <input type="text" class="form-control" id="editUrlPower"
+                           value="{{ report.powerbi_url or '' }}">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Grupo</label>
+                  <select id="editSelectGrupo" class="js-example-basic-single" style="width:100%">
+                    {% for g in groups %}
+                      <option value="{{ g.id }}"
+                        {% if g.id == report.group_id %}selected{% endif %}>
+                        {{ g.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <h3 class="page-title">Nível de Acesso do Painel</h3>
+                <div class="row">
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input cb-acesso"
+                                 data-lvl="gestao"
+                                 {% if 'gestao' in current_levels %}checked{% endif %}>
+                          Gestão
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input cb-acesso"
+                                 data-lvl="estrategico"
+                                 {% if 'estrategico' in current_levels %}checked{% endif %}>
+                          Estratégico
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input cb-acesso"
+                                 data-lvl="operacional"
+                                 {% if 'operacional' in current_levels %}checked{% endif %}>
+                          Operacional
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input type="checkbox" class="form-check-input cb-acesso"
+                                 data-lvl="outros"
+                                 {% if 'outros' in current_levels %}checked{% endif %}>
+                          Outros
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Tipo de Acesso</label>
+                  <select id="editSelectPrivado" class="js-example-basic-single" style="width:100%">
+                    <option value="true"  {% if report.is_public %}selected{% endif %}>Público</option>
+                    <option value="false" {% if not report.is_public %}selected{% endif %}>Privado</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Imagem do Painel</label><br>
+                  {% if report.image_url %}
+                    <img src="{{ report.image_url }}" alt="Imagem atual" style="max-width:150px; border-radius:8px; margin-bottom:8px;">
+                  {% endif %}
+                  <input type="file" id="editInputImagemPainel" accept="image/*" class="file-upload-default">
+                  <div class="input-group col-xs-12">
+                    <input type="text" class="form-control file-upload-info" disabled placeholder="Selecione uma Imagem (opcional)">
+                    <span class="input-group-append">
+                      <button class="file-upload-browse btn btn-primary" type="button">Procurar</button>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="editDescricao">Descrição do Painel</label>
+                  <textarea class="form-control" id="editDescricao" rows="2">{{ report.description or '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary mr-2">Salvar Alterações</button>
+                <a href="/register/report-registration-group" class="btn btn-light">Voltar</a>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+</div>
+
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/select2/select2.min.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/vendors/typeahead.js/typeahead.bundle.min.js') }}"></script>
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="{{ request.app.url_path_for('static', path='assets/js/off-canvas.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/misc.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/settings.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/todolist.js') }}"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <script src="{{ request.app.url_path_for('static', path='assets/js/dashboard.js') }}"></script>
+    <!-- End custom js for this page -->
+    <!-- Custom js for this page -->
+    <script src="{{ request.app.url_path_for('static', path='assets/js/chart.js') }}"></script>
+    <!-- End custom js for this page -->
+    <script src="{{ request.app.url_path_for('static', path='assets/js/file-upload.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/typeahead.js') }}"></script>
+    <script src="{{ request.app.url_path_for('static', path='assets/js/select2.js') }}"></script>
+
+
+
+<script>
+  const API_BASE = window.location.origin + "/";
+</script>
+
+<script>
+  async function uploadImagem(file) {
+    const fd = new FormData();
+    fd.append("file", file);
+    const resp = await fetch(`${API_BASE}upload/image`, {
+      method: "POST",
+      body: fd,
+      credentials: "include",
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || "Falha ao enviar imagem");
+    }
+    return resp.json();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const radiosModo = document.querySelectorAll('input[name="modoPowerBI"]');
+    const blocoIds = document.querySelector(".modo-ids");
+    const blocoUrl = document.querySelector(".modo-url");
+
+    function applyModo(v) {
+      if (v === "url") {
+        blocoUrl.style.display = "block";
+        blocoIds.style.display = "none";
+      } else {
+        blocoUrl.style.display = "none";
+        blocoIds.style.display = "block";
+      }
+    }
+    radiosModo.forEach(r => r.addEventListener("change", e => applyModo(e.target.value)));
+    const checked = document.querySelector('input[name="modoPowerBI"]:checked');
+    if (checked) applyModo(checked.value);
+
+    const form = document.querySelector("#formEditarPainel");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const reportId = document.querySelector("#reportId").value;
+      const modo = document.querySelector('input[name="modoPowerBI"]:checked').value;
+      const name = document.querySelector("#editNome").value.trim();
+      const workspace_id = document.querySelector("#editWorkspace")?.value.trim();
+      const report_id = document.querySelector("#editReport")?.value.trim();
+      const powerbi_url = document.querySelector("#editUrlPower")?.value.trim();
+      const descricao = document.querySelector("#editDescricao")?.value.trim();
+      const group_id = document.querySelector("#editSelectGrupo")?.value.trim();
+      const is_public = document.querySelector("#editSelectPrivado")?.value.trim();
+
+      const access_levels = [];
+      document.querySelectorAll(".cb-acesso").forEach((cb) => {
+        if (cb.checked) {
+          access_levels.push(cb.dataset.lvl);
+        }
+      });
+
+      let image_url = document.querySelector("#currentImageUrl").value || null;
+      const fileInput = document.querySelector("#editInputImagemPainel");
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        try {
+          const up = await uploadImagem(fileInput.files[0]);
+          image_url = up.url;
+        } catch (err) {
+          alert(err.message);
+          return;
+        }
+      }
+
+      const payload = {
+        id: reportId,          // mantém o id
+        name,
+        group_id,
+        description: descricao || null,
+        is_public,
+        access_levels,
+        powerbi_url: null,
+        workspace_id: null,
+        report_id: null,
+        image_url,
+      };
+
+      if (modo === "url") {
+        payload.powerbi_url = powerbi_url || null;
+      } else {
+        payload.workspace_id = workspace_id || null;
+        payload.report_id = report_id || null;
+      }
+
+      if (modo === "url" && !payload.powerbi_url)
+        return alert("Informe a URL do Power BI.");
+      if (modo === "ids" && (!payload.workspace_id || !payload.report_id))
+        return alert("Informe Workspace ID e Report ID.");
+      if (!payload.name) return alert("Informe o nome do painel.");
+
+      const resp = await fetch(`${API_BASE}register/reports/${encodeURIComponent(reportId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) return alert(data.detail || "Erro ao atualizar painel.");
+      alert("Painel atualizado com sucesso!");
+      window.location.href = "/register/report-registration-group";
+    });
+  });
+</script>
+
+{% endblock %}

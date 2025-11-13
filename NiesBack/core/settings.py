@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str | None = None
     MAIL_USE_TLS: bool = True
     MAIL_USE_SSL: bool = False
-    MAIL_DISABLED: bool = True  # desabilita envio real de emails (apenas loga) – para DEV
+    MAIL_DISABLED: bool = False  # desabilita envio real de emails (apenas loga) – para DEV
 
     # Power BI
     PBI_SCOPE: str = "https://analysis.windows.net/powerbi/api/.default"

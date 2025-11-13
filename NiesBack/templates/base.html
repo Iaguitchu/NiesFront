@@ -41,7 +41,6 @@
     {% endif %}
   </script>
 
-
 </head>
   <body>
     <div class="container-scroller">
@@ -289,6 +288,8 @@
        {% block content %}
        
        {% endblock %}
+
+       
     <script src="{{ request.app.url_path_for('static', path='assets/js/logout.js') }}"></script>
 
 

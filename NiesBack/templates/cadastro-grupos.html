@@ -122,7 +122,7 @@
                             </tr>
                           </thead>
                           <tbody>
-                            {%for g in user_groups%}
+                            {%for g in groups%}
                             <tr>                              
                                 <td>{{g.name}}</td>
                                 <td>{{g.description}}</td>
@@ -190,8 +190,11 @@
     <script src="{{ request.app.url_path_for('static', path='assets/js/cadastro-user-group.js') }}"></script>
 
 
-<script>
+    <script>
+// Base da API
 
+
+// helpers
 function setCheckedReportIds(ids) {
   const set = new Set(ids || []);
   document.querySelectorAll('input[name="report"]').forEach(i => {
@@ -199,8 +202,8 @@ function setCheckedReportIds(ids) {
   });
 }
 
-async function fetchReportIdsByBiGroup(groupId) {
-  const resp = await fetch(`${API_BASE}register/bi-groups/${groupId}/report-ids`, {
+async function fetchReportIdsByGroup(groupId) {
+  const resp = await fetch(`${API_BASE}register/user-groups/${groupId}/report-ids`, {
     credentials: "include"
   });
   if (!resp.ok) throw new Error("Falha ao obter os BI do grupo.");
@@ -208,18 +211,21 @@ async function fetchReportIdsByBiGroup(groupId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // comportamento: ao clicar num grupo, carrega SOMENTE os reports daquele grupo
+  // (se preferir união de vários grupos, explico abaixo)
   document.querySelectorAll('input[name="group"]').forEach(cb => {
     cb.addEventListener("change", async (e) => {
       try {
+        // single-select: desmarca todos os outros grupos quando um é marcado
         if (e.target.checked) {
-          // single-select: desmarca outros
           document.querySelectorAll('input[name="group"]').forEach(g2 => {
             if (g2 !== e.target) g2.checked = false;
           });
           const groupId = e.target.value;
-          const reportIds = await fetchReportIdsByBiGroup(groupId);
+          const reportIds = await fetchReportIdsByGroup(groupId);
           setCheckedReportIds(reportIds);
         } else {
+          // se desmarcar o grupo atual, limpa todos os reports
           setCheckedReportIds([]);
         }
       } catch (err) {
@@ -230,6 +236,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
-
 
 {% endblock %}

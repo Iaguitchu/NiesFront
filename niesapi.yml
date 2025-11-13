@@ -1,0 +1,29 @@
+version: '3.3'
+
+services:
+  apache:
+    image: 'docker.registry:5000/niesapi-web'
+    ports:
+      - '8042:5173'
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 2024M
+        reservations:
+          cpus: '0.25'
+          memory: 40M
+    volumes:
+      - type: volume
+        source: html
+        target: /data/media
+        volume:
+          nocopy: true
+volumes:
+  html:
+    driver_opts:
+      type: "nfs"
+      o: "addr=fileserver,nolock,soft,rw"
+      device: ":/dados/volumes/niesapi"

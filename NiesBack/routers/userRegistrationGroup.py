@@ -5,15 +5,13 @@ from fastapi.responses import HTMLResponse
 from models.models_rbac import User
 from services.security import require_admin
 from core.templates import templates
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 from db import get_db
 from models.models_rbac import User, UserGroup, GroupReportPermission
-from models.models import Report, Group
+from models.models import Report
 from schemas.schemas_rbac import UserGroupCreate, UserGroupOut
 from sqlalchemy import func, distinct
 from core.deps import with_menu
-from sqlalchemy import select
-
 
 
 router = APIRouter(prefix="/register", tags=["register"], dependencies=[Depends(with_menu)])
@@ -24,11 +22,10 @@ def user_registration_group(
     db: Session = Depends(get_db),
     user: User = Depends(require_admin),
 ):
-    users_groups = (
+    groups = (
         db.query(
             UserGroup.id,
             UserGroup.name,
-            UserGroup.description,
             func.count(distinct(GroupReportPermission.report_id)).label("total_reports"),
         )
         .outerjoin(GroupReportPermission, GroupReportPermission.group_id == UserGroup.id)
@@ -36,12 +33,6 @@ def user_registration_group(
         .group_by(UserGroup.id, UserGroup.name)
         .order_by(UserGroup.name.asc())
         .all()
-    )
-    groups = (
-        db.query(Group)
-          .filter(Group.is_active.is_(True))
-          .order_by(Group.name.asc())
-          .all()
     )
 
     reports = (
@@ -60,7 +51,6 @@ def user_registration_group(
     ctx = {
         "request": request,
         "user": user,
-        "user_groups": users_groups,
         "groups": groups,
         "reports": reports
     }
@@ -78,9 +68,12 @@ def create_user_group(
     exists = db.query(UserGroup).filter(UserGroup.name == payload.name).first()
     if exists:
         raise HTTPException(status_code=409, detail="Já existe um grupo com esse nome.")
+    
+    if not payload.report_ids:
+        raise HTTPException(status_code=409, detail="Não pode cadastrar grupo sem painel")
 
     # valida reports
-    if payload.report_ids:
+    elif payload.report_ids:
     # 1) Busca somente os IDs existentes no banco
         resultados = (
         db.query(Report.id)
@@ -127,24 +120,13 @@ def create_user_group(
     )
 
 
-@router.get("/bi-groups/{group_id}/report-ids")
-def report_ids_by_bi_group(
-    group_id: str,
-    db: Session = Depends(get_db),
-    _u: User = Depends(require_admin),
-):
-    gtbl = Group.__table__
-
-    # CTE recursiva: pega root + descendentes
-    cte = select(gtbl.c.id).where(gtbl.c.id == group_id).cte(recursive=True)
-    g2 = aliased(gtbl)
-    cte = cte.union_all(select(g2.c.id).where(g2.c.parent_id == cte.c.id))
-
-    # Busca reports ativos nesses grupos
+@router.get("/user-groups/{group_id}/report-ids")
+def list_report_ids_for_group(group_id: str, db: Session = Depends(get_db), _u: User = Depends(require_admin)):
     rows = (
-        db.query(Report.id)
-          .filter(Report.is_active.is_(True),
-                  Report.group_id.in_(select(cte.c.id)))
+        db.query(GroupReportPermission.report_id)
+          .filter(GroupReportPermission.group_id == group_id)
           .all()
     )
-    return [r[0] for r in rows]
+    # rows pode vir como [(id,), (id,)...]
+    ids = [r[0] if isinstance(r, tuple) else getattr(r, "report_id", r) for r in rows]
+    return ids
